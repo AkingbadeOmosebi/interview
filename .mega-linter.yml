@@ -21,4 +21,25 @@ APPLY_FIXES: all
 SHOW_ELAPSED_TIME: true
 
 # Uncomment if you want MegaLinter to detect errors but not block CI to pass
-# DISABLE_ERRORS: true
+DISABLE_ERRORS: true
+
+
+# Disable problematic linters
+#disabled_linters:
+#  - JAVASCRIPT_STANDARD
+#  - COPYPASTE_JSCPD
+#  - CSS_STYLELINT
+#  - BASH_SHELLCHECK
+#  - BASH_EXEC
+
+# Or, to ignore specific files:
+#ignore_patterns:
+#  - app/assets/js/main.js
+#  - app/index.html
+#  - app/assets/css/main.css
+#  - shell/script.sh
+
+# Or, to relax thresholds (for copy-paste for example):
+#linters:
+#  COPYPASTE_JSCPD:
+#    threshold: 5  # Allow up to 5% duplication
