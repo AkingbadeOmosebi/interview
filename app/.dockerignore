@@ -1,0 +1,16 @@
+# Ignore Git and CI-related files
+.git
+.gitignore
+.github/
+*.md
+
+# Ignore local OS and IDE files
+Thumbs.db
+.vscode/
+
+# Ignore Docker build files themselves
+.dockerignore
+
+# Ignore build cache or temp files
+*.log
+tmp/
