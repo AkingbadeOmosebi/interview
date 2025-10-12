@@ -1,5 +1,4 @@
-name: CI - SonarCloud scan (example)
-
+name: CI - SonarCloud scan
 on:
   push:
     branches: [ "main" ]
@@ -19,8 +18,8 @@ jobs:
       # If your sonar-project.properties is at the repo root,
       # the action will pick it up automatically.
       - name: Run Sonar (SonarCloud / SonarQube)
-        uses: SonarSource/sonarqube-scan-action@v1
+        uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          # Optional: if you use SonarQube self-hosted, set SONAR_HOST_URL
-          # SONAR_HOST_URL: https://sonarcloud.io
+          # Optional: if you use SonarQube self-hosted, but for SonarCloud, we set SONAR_HOST_URL
+          SONAR_HOST_URL: https://sonarcloud.io
