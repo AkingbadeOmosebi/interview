@@ -1,0 +1,56 @@
+name: Lint Codebase
+
+# TThis workflow will run whenever ay code is pushed or a pull request is opened on 'main'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Run HTML, CSS, and JS Linters
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment (required for JavaScript-based linters)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Step 3: Install linters globally in the runner
+      - name: Install Linters
+        run: |
+          npm install -g htmlhint stylelint stylelint-config-standard eslint
+
+      # Step 4: Ensure Stylelint configuration exists (create a simple default one if missing)
+      - name: Create Stylelint Config (if missing)
+        run: |
+          if [ ! -f ".stylelintrc.json" ]; then
+            echo '{"extends": "stylelint-config-standard"}' > .stylelintrc.json
+          fi
+
+      # Step 5: Ensure ESLint configuration exists (create a simple default one if missing)
+      - name: Create ESLint Config (if missing)
+        run: |
+          if [ ! -f ".eslintrc.json" ]; then
+            echo '{"env": {"browser": true, "es2021": true}, "extends": "eslint:recommended", "parserOptions": {"ecmaVersion": 12, "sourceType": "module"}}' > .eslintrc.json
+          fi
+
+      # Step 6: Run HTMLHint on all HTML files
+      - name: Run HTMLHint
+        run: npx htmlhint "app/**/*.html"
+
+      # Step 7: Run Stylelint on all CSS files
+      - name: Run Stylelint
+        run: npx stylelint "app/assets/css/**/*.css"
+
+      # Step 8: Run ESLint on all JavaScript files
+        # '-f github' makes lint errors show up in GitHub's UI annotations
+      - name: Run ESLint
+        run: npx eslint "app/assets/js/**/*.js" -f github
