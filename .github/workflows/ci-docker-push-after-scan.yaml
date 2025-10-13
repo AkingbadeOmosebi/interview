@@ -20,7 +20,6 @@ jobs:
       # Required to push to GHCR
 
     env:
-      REGISTRY: ghcr.io/${{ github.repository_owner }}
       IMAGE_NAME: interview-app
       SHORT_SHA: ${{ github.sha }}
 
@@ -32,9 +31,16 @@ jobs:
         # Using my already crafted personal access token stored as GHCR_PAT secret
         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Set lowercase registry and short SHA
+        run: |
+          # Convert GitHub repository owner to lowercase for Docker
+          REGISTRY=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
       - name: Push image to GHCR
         run: |
-          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
           docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
           docker tag $IMAGE_NAME:$SHORT_SHA $REGISTRY/$IMAGE_NAME:$SHORT_SHA
           docker push $REGISTRY/$IMAGE_NAME:latest

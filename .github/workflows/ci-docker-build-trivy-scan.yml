@@ -5,11 +5,13 @@ on:
     workflows: ["CI - SonarCloud scan"]
     types: [completed]
 
+# This will depend on the completion of the former pipeline sonarcloud
+
 jobs:
   build_scan:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
+   # condition set for next step
     env:
       IMAGE_NAME: interview-app
       SHORT_SHA: ${{ github.sha }}
@@ -18,9 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set lowercase registry and short SHA
+        run: |
+          # Convert GitHub repository owner to lowercase for Docker
+          REGISTRY=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
-          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
           docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest ./app
 
       - name: Run Trivy scan
