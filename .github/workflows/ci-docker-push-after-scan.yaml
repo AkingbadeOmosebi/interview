@@ -33,8 +33,8 @@ jobs:
 
       - name: Set lowercase registry and short SHA
         run: |
-          # Convert GitHub repository owner to lowercase for Docker
-          REGISTRY=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          # Convert GitHub repository owner to lowercase for Docker and prefix ghcr.io
+          REGISTRY="ghcr.io/$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
           SHORT_SHA=${GITHUB_SHA::7}
           echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
