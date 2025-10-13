@@ -2,7 +2,7 @@ name: Push Image to GHCR
 
 on:
   workflow_run:
-    workflows: ["Build and Scan with Trivy"]
+    workflows: ["Build and Scan with Trivy"] 
     types: [completed]
 # I want it to only push after the build and scan condition has been met or is successful,
 # to prevent vulnerable images from being pushed to my private registry.
