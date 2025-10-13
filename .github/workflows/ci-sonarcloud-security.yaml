@@ -1,12 +1,16 @@
 name: CI - SonarCloud scan
+
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["MegaLinter"]
+    types:
+      - completed
+# I no longer want it to run on push, but to wait for call of success or completion from megalinter ci
 
 jobs:
   sonar-scan:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}    
+    # This should depend on the success signal of the Megalinter
     name: SonarCloud analysis
     runs-on: ubuntu-latest
     steps:
