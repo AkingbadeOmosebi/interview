@@ -6,12 +6,12 @@ metadata:
   labels:
     app: interview-app
 spec:
-  type: NodePort   # For Minikube (so i can access it via <minikube ip>:<nodePort>)
+  type: LoadBalancer   # For Minikube (so i can access it via <minikube ip>:<nodePort>)
   selector:
     app: interview-app
   ports:
     - name: http        # Regular port 80 for http
       protocol: TCP     # Network protocol type
       port: 80          # The service port 
-      targetPort: 8080  # It has to match the port in my deployment file
-      nodePort: 30080   # Optional: i will manually add a port; or else K8s assigns one for me
+      targetPort: 80  # It has to match the port in my deployment file
+      nodePort:    # Optional: i will manually add a port; or else K8s assigns one for me

@@ -20,9 +20,9 @@ spec:
     spec:
       containers:
         - name: interview-app         # Name of my container
-          image: ghcr.io/akingbadeomosebi/interview-app:b3435ec     # My image i want to deploy, wthi the tag
+          image: ghcr.io/akingbadeomosebi/interview-app:1a63db0     # My image i want to deploy, wthi the tag
           ports:
-            - containerPort: 8080     #my container port, which i also defined in my service file
+            - containerPort: 80     #my container port, which i also defined in my service file
           resources:      # Limiting memeory consumption in my cluster, so it doesnt hoard memory.
             requests:         # Limit for app
               cpu: "100m"
