@@ -6,7 +6,7 @@ metadata:
   labels:
     app: interview-app
 spec:
-  type: LoadBalancer   # For Minikube (so i can access it via <minikube ip>:<nodePort>)
+  type: NodePort   # For K3s (so i can access it via K3s:<nodePort>) 
   selector:
     app: interview-app
   ports:
