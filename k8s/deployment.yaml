@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment      # Manfinest defifintion type.
+metadata:
+  name: interview-app
+  namespace: default
+spec:
+  replicas: 2     # How many instances or replicas of the app i want running at all times minimum
+  strategy:       # How i want to define my update strategy
+    type: RollingUpdate     # I chose RollingUpdate, over blue-green or canary for this very proj, 
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: interview-app
+  template:
+    metadata:
+      labels:
+        app: interview-app
+    spec:
+      containers:
+        - name: interview-app         # Name of my container
+          image: ghcr.io/akingbadeomosebi/interview-app:b3435ec     # My image i want to deploy, wthi the tag
+          ports:
+            - containerPort: 8080     #my container port, which i also defined in my service file
+          resources:      # Limiting memeory consumption in my cluster, so it doesnt hoard memory.
+            requests:         # Limit for app
+              cpu: "100m"
+              memory: "128Mi"
+            limits:             # Limit for cluster
+              cpu: "500m"
+              memory: "512Mi"
