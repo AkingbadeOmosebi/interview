@@ -14,4 +14,4 @@ spec:
       protocol: TCP     # Network protocol type
       port: 80          # The service port 
       targetPort: 80  # It has to match the port in my deployment file
-      nodePort:    # Optional: i will manually add a port; or else K8s assigns one for me
+      nodePort: 31080   # Optional: i will manually add a port; or else K8s assigns one for me
