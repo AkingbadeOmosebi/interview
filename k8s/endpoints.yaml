@@ -9,7 +9,7 @@ spec:
     name: interview-app
     port: 80
   routes:
-    - path: /api/*
+    - path: /api/.*
       methods: ["GET", "POST"]
   auth:
     type: basic
@@ -43,3 +43,6 @@ spec:
       - 193.144.0.0/12
       - 195.128.0.0/12
       - 212.0.0.0/11
+
+
+# Ip restrictions to restrict ip addresses from spain region.
