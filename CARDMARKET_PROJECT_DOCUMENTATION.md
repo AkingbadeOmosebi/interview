@@ -18,10 +18,76 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
     - Enable external access to the cluster for testing and security hardening.
 
 
- ### TL;DR. FINAL APPLICATION RUNNING LINK:
+ ### TL;DR. FINAL APPLICATION RUNNING LINK + ASCII DIAGRAM:
 
    - https://unstoical-carmelina-diphyodont.ngrok-free.dev/   
 
+
+```
++-----------------+        Git Push       +---------------------------+
+|                 |  ----------------->  |                           |
+|  Developer      |                      |  GitHub Repository        |
+|  (Local Code)   |                      |  (Application + K8s YAML)|
+|                 |                      |                           |
++-----------------+                      +---------------------------+
+                                                  |
+                                                  | GitHub Actions CI/CD
+                                                  v
+                                          +---------------------+
+                                          |                     |
+                                          |  CI/CD Workflows    |
+                                          |  - Megalinter       |
+                                          |  - Trivy Scan       |
+                                          |  - SonarCloud Scan  |
+                                          |  - Build & Push     |
+                                          |    Docker Image     |
+                                          +---------------------+
+                                                  |
+                                                  v
+                                          +---------------------+
+                                          |                     |
+                                          |  ArgoCD GitOps      |
+                                          |  - Watches Repo     |
+                                          |  - Deploys K3s      |
+                                          |  - Updates Images   |
+                                          |    via Image Updater|
+                                          |  - Enforces Security|
+                                          |    Policies & Sync  |
+                                          +---------------------+
+                                                  |
+                                                  v
+           +----------------+           +---------------------+
+           |                |           |                     |
+           |  K3s Cluster   |<--------->|  SealedSecrets      |
+           |  (Local / EC2) |           |  & Secrets Mgmt     |
+           | - Namespaces   |           | - Authtokens        |
+           | - Deployments  |           | - DB Credentials    |
+           | - Services     |           | - Secure Configs    |
+           +----------------+           +---------------------+
+                    |
+                    | Exposes app
+                    v
+           +---------------------+
+           |                     |
+           |  Ngrok Agent        |
+           | - Exposes Local App |
+           |   to Public URL     |
+           | - Traffic Logging   |
+           | - Optional CIDR     |
+           |   restrictions      |
+           | - Debugging & Inspect|
+           +---------------------+
+                    |
+                    v
+           +---------------------+
+           |                     |
+           |  Public Access      |
+           |  - Interview App    |
+           |  - QA / Client Test |
+           |  - Secure Tunneling |
+           +---------------------+
+
+```
 
 
 1. Application Setup
@@ -53,7 +119,8 @@ Why:
 
 
 2. Continuous Integration (CI) Pipeline
-2.1. Megalinter
+
+* 2.1. Megalinter
 
    -  Purpose: Catch linting errors in HTML, CSS, and JS before code progresses.
 
