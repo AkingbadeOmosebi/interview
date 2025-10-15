@@ -28,6 +28,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check if app code changed
+        # This is to skip biuld and push if there is no change in my application code, helps me prevent redudntant images in regisryy
+        run: |
+          git fetch --depth=2
+          if git diff --quiet HEAD^ HEAD -- ./app; then
+            echo "No changes in app, skipping Docker build and push."
+            exit 0
+          fi
+
       - name: Log in to GHCR
         # Using my already crafted personal access token stored as GHCR_PAT secret
         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin

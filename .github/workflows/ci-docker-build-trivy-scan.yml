@@ -31,6 +31,14 @@ jobs:
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
           echo "SEMVER=$SEMVER" >> $GITHUB_ENV
 
+      - name: Check if app code changed
+        run: |
+          git fetch --depth=2
+          if git diff --quiet HEAD^ HEAD -- ./app; then
+            echo "No changes in app, skipping Docker build and Trivy scan."
+            exit 0
+          fi
+
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SEMVER ./app
