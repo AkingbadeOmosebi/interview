@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: ngrok-agent
   namespace: ngrok-operator
-  labels:
-    app: ngrok-agent
 spec:
   replicas: 1
   selector:
@@ -18,36 +16,24 @@ spec:
       containers:
         - name: ngrok-agent
           image: ngrok/ngrok:3
-          # Command-line arguments for Ngrok agent
           args:
-            - "http"                   # Protocol: HTTP tunnel
-            - "interview-app:80"       # Target service inside cluster
+            - "http"
+            - "interview-app:80"         # Target your app service
             - "--authtoken"
-            - "$(NGROK_AUTH_TOKEN)"    # Ngrok auth token from sealed secret
-            - "--auth"
-            - "myuser:mypassword"      # Basic authentication for the public tunnel
+            - "$(NGROK_AUTH_TOKEN)"       # From secret
             - "--allow-cidr"
-            - "192.168.0.0/16"         # Allow internal IP range (example)
+            - "192.168.0.0/16"           # Allow internal network
             - "--deny-cidr"
-            - "5.142.0.0/16"           # Denies traffic from Spain (example CIDR)
+            - "5.142.0.0/16"             # Block Spain
             - "--rate-limit"
-            - "20:60s"                  # Max 10 requests per 60 seconds
+            - "20:60s"                    # 20 requests per 60 seconds
             - "--log"
-            - "stdout"                  # Send logs to stdout for kubectl logging
+            - "stdout"                     # Send logs to stdout
           env:
-            # Loads Ngrok token securely from SealedSecret
             - name: NGROK_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: ngrok-secret
                   key: authtoken
           ports:
-            - containerPort: 4040       # Ngrok Web UI (optional, can port-forward)
-          resources:
-            limits:
-              cpu: "100m"
-              memory: "128Mi"
-            requests:
-              cpu: "50m"
-              memory: "64Mi"
-      restartPolicy: Always
+            - containerPort: 4040          # Ngrok web UI inside pod
