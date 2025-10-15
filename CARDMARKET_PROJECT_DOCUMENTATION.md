@@ -18,6 +18,11 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
     - Enable external access to the cluster for testing and security hardening.
 
 
+ ### TL;DR. FINAL APPLICATION RUNNING LINK:
+
+   - https://unstoical-carmelina-diphyodont.ngrok-free.dev/   
+
+
 
 1. Application Setup
 
@@ -417,3 +422,127 @@ ArgoCD Image Updater    	Auto image update	                                https
 Kustomize	                Manifest customization                          	https://kubectl.docs.kubernetes.io/references/kustomize/
 
 ngrok	                    External access (WAF, like CLoudFlare)              https://ngrok.com/docs
+
+
+
+## Screenshots
+
+
+### 1. Agents
+Demonstrates the various agents running in the Kubernetes cluster, including the ngrok-agent and ngrok-operator-agent pods, interconnected and providing feedback on the dashboard through the Authtoken and Api.
+![Agents](./screenshots/Agents.png)
+
+### 2. App Live
+Shows the live deployment of the interview-app running on Kubernetes, accessible through the NodePort service.
+![App Live](./screenshots/App_live.png)
+
+### 3. ArgoCD App
+Displays the ArgoCD application view for the CardMarket assessment project.
+![ArgoCD App](./screenshots/ArgoCD_App.png)
+
+### 4. ArgoCD
+Shows the ArgoCD dashboard with all deployed applications.
+![ArgoCD](./screenshots/ArgoCD.png)
+
+### 5. GHA Megalinter
+Displays GitHub Actions running the MegaLinter workflow for code quality checks.
+![GHA Megalinter](./screenshots/GHA_(Megalinter).png)
+
+### 6. GHA Push Image to GHCR
+Shows the workflow that builds and pushes Docker images to GitHub Container Registry (GHCR).
+![GHA Push Image](./screenshots/GHA_(Push_image_to_Ghcr).png)
+
+### 7. GHA SonarQube Scan
+Displays the workflow that scans the code with SonarQube/SonarCloud.
+![GHA SonarQube Scan](./screenshots/GHA_(SonarQube_SonarCloud_SCAN).png)
+
+### 8. GHA Build and Scan with Trivy
+Shows the workflow that performs Trivy vulnerability scans on Docker images.
+![GHA Build & Scan](./screenshots/GHA_Build_and_Scan_with_Trivy.png)
+
+### 9. GHA All Workflows
+Shows a summary of all GitHub Actions workflows for the project.
+![GHA All Workflows](./screenshots/GHA-ALLWORKFLOWS.png)
+
+### 10. K3S Distro
+Shows the K3S lightweight Kubernetes cluster used for testing and deployment.
+![K3S Distro](./screenshots/K3S_Distro.png)
+
+### 11. Ngrok Local UI Inspect
+Shows the ngrok agent local UI inspecting the live tunnel and traffic.
+![Ngrok Local UI Inspect](./screenshots/Ngrok_(Local_UI_Inspect).png)
+
+### 12. Ngrok Local UI Port Forward to Local Host
+Demonstrates how the ngrok tunnel forwards traffic from the public URL to the local Kubernetes service.
+![Ngrok Port Forward](./screenshots/Ngrok(Local_UI_Port_Forward_to_Local_Host).png)
+
+### 13. Ngrok Local UI Status Report
+Shows the current status of the ngrok tunnel and connected endpoints.
+![Ngrok Status Report](./screenshots/Ngrok_(Local_UI_Status_Report).png)
+
+### 14. Ngrok Endpoint
+Displays the ngrok public endpoint that exposes the local app to the internet.
+![Ngrok Endpoint](./screenshots/Ngrok_Endpoint.png)
+
+### 15. Ngrok Terminal
+Shows the terminal output of the ngrok agent container inside Kubernetes.
+![Ngrok Terminal](./screenshots/Ngrok_Terminal.png)
+
+### 16. Ngrok Traffic Inspector
+Displays traffic details for requests passing through the ngrok tunnel.
+![Ngrok Traffic Inspector](./screenshots/Ngrok_Traffic_Inspector.png)
+
+### 17. SonarQube
+Shows the SonarQube dashboard analyzing code quality and test coverage.
+![SonarQube](./screenshots/SonarQube.png)
+
+### 18. WSL Win11
+Displays the Windows Subsystem for Linux (WSL) setup on Windows 11 used for the local development environment.
+![WSL Win11](./screenshots/WSL_Win11.png)
+
+
+### K3S CLUSTER 
+
+### 19. All pods Across All Namespaces
+This screenshot shows all pods running in my cluster across all namespaces. You can see both the interview-app pods in the default namespace and the ngrok-agent and ngrok-operator pods in the ngrok-operator namespace. It confirms that all components of the project are deployed successfully
+![All Pods](screenshots/SHOW_ALL_NAME_SPACE.png)
+
+
+### 20. All Services Across All Namespaces
+Here I display all Kubernetes services. The interview-app NodePort service is visible, along with internal services for ngrok-agent and ngrok-operator. This ensures traffic routing is correctly configured in the cluster.
+![All Services](screenshots/SHOW_ALL_SERVICES.png)
+
+
+### 21 Deployments in Namespaces
+This screenshot shows the deployments in the namespaces. You can verify the number of replicas, container images, and current pod status. It shows that ngrok-agent and interview-app deployments are running as expected.
+![Deployments](screenshots/SHOW_DEPLOYMENT_IN_NS.png)
+
+
+### 22. Pod Details.
+Here we inspect the details of a specific pod. This includes the pod’s labels, node assignment, container configuration, and recent events. It’s useful to verify environment variables, volumes, and network connectivity for debugging purposes.
+![Pod Details](screenshots/SHOW_POD_DETAILS.png)
+
+
+### 23. Pod Logs
+This screenshot shows logs from the ngrok-agent pod. It confirms the ngrok tunnel is established and provides the live public URL for external access to the application. Logs also help in troubleshooting connection issues.
+![Pod Logs](screenshots/SHOW_POD_LOGS.png)
+
+
+### 24. Sealed Secrets
+SealedSecrets are used to store sensitive data in the cluster safely. This screenshot shows the ngrok-secret and interview-app-auth SealedSecrets applied in the ngrok-operator namespace.
+![SealedSecrets](screenshots/SHOW_SEALED_SECRETS.png)
+
+
+### 25. K8s Secrets
+This screenshot shows decrypted Kubernetes secrets available in the cluster. They are derived from the SealedSecrets and used by pods to authenticate with ngrok or other services.
+![Secrets](screenshots/SHOW_SECRETS.png)
+
+
+### 26. K8s Services with Ports
+Here we describe the services along with their port mappings, ClusterIP, and selectors. This verifies that the interview-app NodePort and internal ngrok services are correctly routing traffic.
+![Services with Ports](screenshots/SHOW_SERVICES_WITH_PORTS.png)
+
+
+### Final Application LIVE & Running URL LINK:
+
+https://unstoical-carmelina-diphyodont.ngrok-free.dev/
