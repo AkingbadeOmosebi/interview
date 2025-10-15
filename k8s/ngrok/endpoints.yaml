@@ -1,0 +1,48 @@
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
+kind: CloudEndpoint
+metadata:
+  name: interview-app-endpoint
+  namespace: ngrok-operator
+spec:
+  hostname: unstoical-carmelina-diphyodont.ngrok-free.dev
+  service:
+    name: interview-app
+    port: 80
+  routes:
+    - path: /api/.*
+      methods: ["GET", "POST"]
+  auth:
+    type: basic
+    secretName: interview-app-auth
+    usernameKey: username
+    passwordKey: password
+  rateLimit:
+    requests: 20
+    per: 60s
+  ipRestrictions:
+    deny:
+      - 2.16.0.0/13
+      - 5.57.0.0/16
+      - 5.57.32.0/19
+      - 31.13.0.0/16
+      - 37.0.0.0/9
+      - 46.16.0.0/12
+      - 77.200.0.0/13
+      - 81.0.0.0/12
+      - 83.34.0.0/15
+      - 84.0.0.0/12
+      - 88.0.0.0/12
+      - 89.128.0.0/10
+      - 91.48.0.0/12
+      - 93.0.0.0/16
+      - 95.0.0.0/12
+      - 109.128.0.0/11
+      - 146.255.0.0/16
+      - 185.48.0.0/14
+      - 188.128.0.0/12
+      - 193.144.0.0/12
+      - 195.128.0.0/12
+      - 212.0.0.0/11
+
+
+# Ip restrictions to restrict ip addresses from spain region.
