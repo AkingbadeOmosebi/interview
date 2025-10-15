@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ngrok-agent
+  namespace: ngrok-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ngrok-agent
+  template:
+    metadata:
+      labels:
+        app: ngrok-agent
+    spec:
+      containers:
+        - name: ngrok-agent
+          image: ngrok/ngrok:3
+          args:
+            - "http"
+            - "interview-app:80"   # Target my app service here
+            - "--authtoken"
+            - "$(NGROK_AUTH_TOKEN)"
+            - "--log"
+            - "stdout"
+          env:
+            - name: NGROK_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ngrok-secret
+                  key: authtoken
+          ports:
+            - containerPort: 4040  # Addittional: Acecess Ngrok web UI inside pod

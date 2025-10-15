@@ -1,6 +1,5 @@
 resources:
   - deployment.yaml
   - service.yaml
+  - ngrok-agent-deployment.yaml
   - ngrok-secret.yaml
-  - interview-app-auth.yaml
-  - endpoints.yaml
