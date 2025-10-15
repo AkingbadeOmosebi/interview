@@ -18,17 +18,11 @@ spec:
           image: ngrok/ngrok:3
           args:
             - "http"
-            - "interview-app:80"         # Target your app service
+            - "interview-app:80"   # Target my app service
             - "--authtoken"
-            - "$(NGROK_AUTH_TOKEN)"       # From secret
-            - "--allow-cidr"
-            - "192.168.0.0/16"           # Allow internal network
-            - "--deny-cidr"
-            - "5.142.0.0/16"             # Block Spain
-            - "--rate-limit"
-            - "20:60s"                    # 20 requests per 60 seconds
+            - "$(NGROK_AUTH_TOKEN)"
             - "--log"
-            - "stdout"                     # Send logs to stdout
+            - "stdout"
           env:
             - name: NGROK_AUTH_TOKEN
               valueFrom:
@@ -36,4 +30,4 @@ spec:
                   name: ngrok-secret
                   key: authtoken
           ports:
-            - containerPort: 4040          # Ngrok web UI inside pod
+            - containerPort: 4040   # Ngrok Web UI for external accessing of ngrok

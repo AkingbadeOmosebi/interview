@@ -269,6 +269,127 @@ Improves reproducibility and traceability.
 
   - Exposing K3s cluster externally required ngrok and security considerations.
 
+
+
+# Last minute implementation: Added NGROK in Agentic mode as a reverse proxy and WAF.
+
+
+* Ngrok Integration for Interview App
+
+    * Overview
+
+        Ngrok is used to expose local services securely over the internet without directly exposing the cluster via a public IP. For  this project, we deployed Ngrok as an agent within the Kubernetes cluster, which forwards traffic to the interview-app service.
+
+    * Key objectives of this integration:
+
+      - Securely expose the application for external access.
+
+      - Use IP restrictions to allow/deny traffic from specific ranges.
+
+      - Enable request rate-limiting.
+
+      - Ensure secrets (Ngrok authtoken) are not hard-coded using kubeseal.
+
+      - Use ArgoCD for full GitOps deployment — no manual kubectl apply.
+
+
+    * Architecture:
+
+         -   [User] ---> [Ngrok Public URL] ---> [Ngrok Agent Pod] ---> [interview-app Service] ---> [Deployment]
+
+    
+        - The Ngrok Agent runs as a Deployment in the ngrok-operator namespace.
+
+        - All sensitive data is stored in sealed secrets, which are encrypted and only decrypted inside the cluster.
+
+        - ArgoCD monitors the Git repository for manifests and ensures the Ngrok agent is always deployed with the correct configuration.
+
+
+    # Secrets Management
+
+       * We used Bitnami SealedSecrets to handle sensitive data such as:
+
+        - NGROK_AUTH_TOKEN (Ngrok authtoken)
+
+        - Application username/password (if needed)
+
+
+    * Steps:
+        - 1  Create a raw secret manifest (ngrok-secret-raw.yaml) containing the authtoken:
+
+          ```
+          apiVersion: v1
+             kind: Secret
+             metadata:
+                name: ngrok-secret
+                namespace: ngrok-operator
+             type: Opaque
+             data:
+                authtoken: <base64-encoded-token>
+                ```
+
+        - 2 Seal the secret using kubeseal with the cluster controller certificate:
+
+           ``` 
+           kubeseal --controller-namespace=kube-system \
+                     --controller-name=sealed-secrets-controller \
+                     -o yaml < ngrok-secret-raw.yaml > ngrok-secret.yaml
+                     ```
+
+        - 3 Commit the secret using kubeseal with the cluser controller certificate.
+
+        - 4 ArgoCD applies the sealed secret and the controller decrypts it within the cluster.
+
+            | This ensures sensitive information is never exposed in git or deployment files
+
+
+    
+## NGROK AGENT DEPLOYMENT
+
+
+   * The Ngrok agent runs as a Kubernetes Deployment targeting the interview-app service. Configuration highlights:
+
+     - Exposes HTTP traffic from Ngrok to the app service.
+
+     -  IP restrictions using --allow-cidr and --deny-cidr.
+
+     - Request rate-limiting with --rate-limit.
+
+     -  Logging enabled to stdout for visibility.
+
+     - Pulls the authtoken from the sealed secret.
+
+    
+# Accessing the Ngrok URL
+
+    Once the Ngrok Agent Pod is running, the piblic URL is displayed in the pod logs:
+
+    ```
+    kubectl logs -l app=ngrok-agent -n ngrok-operator
+    ```
+
+  *  This URL can be shared for external access, while IP restrictions and rate-limiting ensure secure usage.
+
+
+# Security and Policy Considerations
+
+   - Secrets: All sensitive information is encrypted using SealedSecrets.
+
+   - IP Restrictions: --allow-cidr and --deny-cidr limit access to approved networks.
+
+   - Rate Limiting: --rate-limit protects against excessive requests.
+
+   - Logging: All traffic and events are logged to stdout, enabling monitoring.
+
+   - GitOps Compliance: No manual kubectl apply is used; ArgoCD manages all resources.
+
+
+# Notes 
+
+ * Success and Failures
+     - Added and removed extra features as they were test features such as --auth, --cidr, etc to expand on the project.
+     - CloudEndpoint CRD was discarded in favor of the agent endpoint, which is simpler for local development and ArgoCD-based deployment.
+
 8. References and Links
 
 Tool	                    Purpose                                         	Documentation
