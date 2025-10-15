@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: ngrok-agent
   namespace: ngrok-operator
+  labels:
+    app: ngrok-agent
 spec:
   replicas: 1
   selector:
@@ -16,18 +18,36 @@ spec:
       containers:
         - name: ngrok-agent
           image: ngrok/ngrok:3
+          # Command-line arguments for Ngrok agent
           args:
-            - "http"
-            - "interview-app:80"   # Target my app service here
+            - "http"                   # Protocol: HTTP tunnel
+            - "interview-app:80"       # Target service inside cluster
             - "--authtoken"
-            - "$(NGROK_AUTH_TOKEN)"
+            - "$(NGROK_AUTH_TOKEN)"    # Ngrok auth token from sealed secret
+            - "--auth"
+            - "myuser:mypassword"      # Basic authentication for the public tunnel
+            - "--allow-cidr"
+            - "192.168.0.0/16"         # Allow internal IP range (example)
+            - "--deny-cidr"
+            - "5.142.0.0/16"           # Denies traffic from Spain (example CIDR)
+            - "--rate-limit"
+            - "20:60s"                  # Max 10 requests per 60 seconds
             - "--log"
-            - "stdout"
+            - "stdout"                  # Send logs to stdout for kubectl logging
           env:
+            # Loads Ngrok token securely from SealedSecret
             - name: NGROK_AUTH_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: ngrok-secret
                   key: authtoken
           ports:
-            - containerPort: 4040  # Addittional: Acecess Ngrok web UI inside pod
+            - containerPort: 4040       # Ngrok Web UI (optional, can port-forward)
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+      restartPolicy: Always
