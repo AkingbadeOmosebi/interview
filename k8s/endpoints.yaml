@@ -2,7 +2,7 @@ apiVersion: ngrok.com/v1alpha1
 kind: Endpoint
 metadata:
   name: interview-app-endpoint
-  namespace: default
+  namespace: ngrok-system
 spec:
   hostname: unstoical-carmelina-diphyodont.ngrok-free.dev
   routes:
@@ -42,6 +42,7 @@ spec:
         credentials:
           usernameKey: username
           passwordKey: password
+          secretName: interview-app-auth
       rateLimit:
         requests: 20
         per: 60s
