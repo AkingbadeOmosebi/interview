@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: interview-app         # Name of my container
-          image: ghcr.io/akingbadeomosebi/interview-app:1a63db0     # My image i want to deploy, wthi the tag
+          image: ghcr.io/akingbadeomosebi/interview-app:latest     # Updated to work with new SemVer; ArgoCD Image Updater will replace this with the newest 1.0.x patch automatically
           ports:
             - containerPort: 80     #my container port, which i also defined in my service file
           resources:      # Limiting memeory consumption in my cluster, so it doesnt hoard memory.

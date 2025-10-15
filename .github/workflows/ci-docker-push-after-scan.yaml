@@ -22,6 +22,7 @@ jobs:
     env:
       IMAGE_NAME: interview-app
       SHORT_SHA: ${{ github.sha }}
+      SEMVER: 1.0.${{ github.run_number }}
 
     steps:
       - name: Checkout repository
@@ -38,16 +39,19 @@ jobs:
           SHORT_SHA=${GITHUB_SHA::7}
           echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "SEMVER=$SEMVER" >> $GITHUB_ENV
 
       - name: Build Docker image again before push
         # The image built in the previous workflow does not persist between jobs. Basically, new ubuntu runner, needs its own image build
         # so we need to rebuild it before tagging and pushing.
         run: |
-          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest ./app
+          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SEMVER ./app
 
       - name: Push image to GHCR
         run: |
           docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
           docker tag $IMAGE_NAME:$SHORT_SHA $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+          docker tag $IMAGE_NAME:$SEMVER $REGISTRY/$IMAGE_NAME:$SEMVER
           docker push $REGISTRY/$IMAGE_NAME:latest
           docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+          docker push $REGISTRY/$IMAGE_NAME:$SEMVER

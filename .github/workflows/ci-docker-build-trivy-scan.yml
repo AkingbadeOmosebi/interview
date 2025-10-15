@@ -20,17 +20,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set lowercase registry and short SHA
+      - name: Set lowercase registry, short SHA, and SemVer
         run: |
           # Convert GitHub repository owner to lowercase for Docker
           REGISTRY=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
           SHORT_SHA=${GITHUB_SHA::7}
+          # Auto-increment SemVer patch using GitHub run number
+          SEMVER="1.0.${{ github.run_number }}"
           echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "SEMVER=$SEMVER" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: |
-          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest ./app
+          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SEMVER ./app
 
       - name: Run Trivy scan
         uses: aquasecurity/trivy-action@master
