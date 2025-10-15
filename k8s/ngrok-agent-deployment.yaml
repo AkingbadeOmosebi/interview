@@ -18,7 +18,7 @@ spec:
           image: ngrok/ngrok:3
           args:
             - "http"
-            - "interview-app:80"   # Target my app service
+            - "interview-app.default.svc.cluster.local:80"   # Target my app service
             - "--authtoken"
             - "$(NGROK_AUTH_TOKEN)"
             - "--log"
