@@ -1,4 +1,4 @@
-apiVersion: cloudendpoints.ngrok.k8s.ngrok.com
+apiVersion: ngrok.k8s.ngrok.com/v1alpha1
 kind: CloudEndpoint
 metadata:
   name: interview-app-endpoint
