@@ -2,7 +2,7 @@ apiVersion: ngrok.k8s.com/v1alpha1
 kind: CloudEndpoint
 metadata:
   name: interview-app-endpoint
-  namespace: ngrok-system
+  namespace: ngrok-operator
 spec:
   hostname: unstoical-carmelina-diphyodont.ngrok-free.dev
   service:
