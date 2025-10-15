@@ -3,6 +3,10 @@ kind: Application
 metadata:
   name: interview-app
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: interview-app=ghcr.io/akingbadeomosebi/interview-app
+    argocd-image-updater.argoproj.io/interview-app.update-strategy: latest
+    argocd-image-updater.argoproj.io/write-back-method: argocd
 spec:
   project: default
   source:
