@@ -60,12 +60,23 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
            |                |           |                     |
            |  K3s Cluster   |<--------->|  SealedSecrets      |
            |  (Local / EC2) |           |  & Secrets Mgmt     |
-           | - Namespaces   |           | - Authtokens        |
-           | - Deployments  |           | - DB Credentials    |
-           | - Services     |           | - Secure Configs    |
+           | - Namespaces   |           | - Grafana Admin     |
+           | - Deployments  |           | - Alertmanager SMTP |
+           | - Services     |           | - DB & API Keys     |
            +----------------+           +---------------------+
                     |
-                    | Exposes app
+          ---------------------------
+          |           |             |
+          v           v             v
++----------------+  +---------------------+  +---------------------+
+|                |  |                     |  |                     |
+|  Prometheus    |  |  Grafana Dashboard  |  |  Alertmanager       |
+|  - Metrics     |  |  - Visualizes       |  |  - Configures       |
+|    Collection  |  |    Prometheus Data  |  |    Alerts           |
+|  - Node/Pod    |  |  - Kubernetes Dash  |  |  - Sends Notifications|
+|    Metrics     |  |  - App Dashboards   |  |    via Email / Webhook|
++----------------+  +---------------------+  +---------------------+
+                    |
                     v
            +---------------------+
            |                     |
@@ -86,6 +97,7 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
            |  - QA / Client Test |
            |  - Secure Tunneling |
            +---------------------+
+
 
 ```
 
@@ -157,12 +169,14 @@ Redundancy Check: Build occurs only if app code changed, using Git diff check.
 * GitHub Actions Step Example:
 
     - name: Check if app code changed
-    run: |
+   ``` 
+   run: |
         git fetch --depth=2
         if git diff --quiet HEAD^ HEAD -- ./app; then
         echo "No changes in app, skipping Docker build and Trivy scan."
         exit 0
         fi
+        ```
 
 
 Trivy Scan:
@@ -240,13 +254,15 @@ Why:
 
 * Example Application Annotation:
 
-        annotations:
+       ``` 
+       annotations:
             argocd-image-updater.argoproj.io/image-list: interview-app=ghcr.io/akingbadeomosebi/interview-app
             argocd-image-updater.argoproj.io/interview-app.update-strategy: semver:~1.0
             argocd-image-updater.argoproj.io/interview-app.force-update: "true"
             argocd-image-updater.argoproj.io/write-back-method: git
             argocd-image-updater.argoproj.io/git-https-username-secret: argocd-image-updater-git
             argocd-image-updater.argoproj.io/git-https-password-secret: argocd-image-updater-git
+            ```
 
 
 * Why git write-back:
@@ -456,13 +472,53 @@ Improves reproducibility and traceability.
    - GitOps Compliance: No manual kubectl apply is used; ArgoCD manages all resources.
 
 
+8. Monitoring and Alerting with Prometheus & Grafana
+
+ * The project uses Prometheus for metrics collection and Grafana for visualization, providing real-time insight into the Kubernetes cluster and deployed applications.
+
+    - Prometheus scrapes metrics from Kubernetes components, pods, and services, enabling monitoring of CPU, memory, network usage, and application health.
+
+    - Grafana connects to Prometheus as a data source and displays metrics in interactive dashboards, including the default Kubernetes cluster dashboard.
+
+    -  Alerts are configured via Alertmanager to notify on critical conditions, with email notifications demonstrated for Gmail.
+
+    Example snippet used to enable Alerting via Email (GMAIL).
+
+    ```
+    alertmanager:
+      alertmanagerSpec:
+        config:
+          global:
+            smtp_smarthost: 'smtp.gmail.com:587'
+            smtp_from: 'your-email@gmail.com'
+            smtp_auth_username: # reference Kubernetes secret
+              name: gmail-secret
+              key: username
+            smtp_auth_password: # reference Kubernetes secret
+              name: gmail-secret
+              key: password
+        route:
+            receiver: 'email-notifications'
+        receivers:
+            - name: 'email-notifications'
+            email_configs:
+                - to: 'your-email@gmail.com'
+                send_resolved: true
+
+    ```
+
+    -  The setup is fully managed via ArgoCD, ensuring GitOps-driven deployment, automated updates, and secure secret handling using SealedSecrets.
+
+    -  This monitoring stack ensures observability, proactive alerting, and maintains security best practices by avoiding hardcoded credentials.
+
+
 # Notes 
 
  * Success and Failures
      - Added and removed extra features as they were test features such as --auth, --cidr, etc to expand on the project.
      - CloudEndpoint CRD was discarded in favor of the agent endpoint, which is simpler for local development and ArgoCD-based deployment.
 
-8. References and Links
+9. References and Links
 
 Tool	                    Purpose                                         	Documentation
 
@@ -563,6 +619,9 @@ Displays traffic details for requests passing through the ngrok tunnel.
 Shows the SonarQube dashboard analyzing code quality and test coverage.
 ![SonarQube](./screenshots/SonarQube.png)
 
+## 17.2 OVERVIEW SONARQUBE
+![Services with Ports](screenshots/SONARQUBE_2.png)
+
 ### 18. WSL Win11
 Displays the Windows Subsystem for Linux (WSL) setup on Windows 11 used for the local development environment.
 ![WSL Win11](./screenshots/WSL_Win11.png)
@@ -609,6 +668,34 @@ This screenshot shows decrypted Kubernetes secrets available in the cluster. The
 Here we describe the services along with their port mappings, ClusterIP, and selectors. This verifies that the interview-app NodePort and internal ngrok services are correctly routing traffic.
 ![Services with Ports](screenshots/SHOW_SERVICES_WITH_PORTS.png)
 
+
+## PROMETHEUS AND GRAFANA
+
+
+### 27. GRAFANA DASHBOARD
+Shows the dashboard of Grafana for Observability and Telemetry
+![GRAFANA DASHBOARD](screenshots/GRAFANA_DASHBOARD.png)
+
+
+### 28. GRAFANA SVC
+Shows the serevices associated with Grafana
+![Services with Grafana](screenshots/GRAFANA_SVC.png)
+
+### 29. GRAFANA LIVE VISUAL
+Shows the live visual representation of a service health in Grafana
+![Services with Ports](screenshots/GRAFANA_VIZ.png)
+
+### 30. MONITORING PODS
+Pods associated with the monitoring namespace for Grafana & Prometheus
+![Services with Ports](screenshots/MONITORING_PODS.png)
+
+### 31. PROMETHEUS PORT
+Port use to access prometheus server running
+![Services with Ports](screenshots/PROMETHEUS_PORT.png)
+
+### 32. PROMETHEUS SERVER RUNNING
+Live Prometheus Server Running and Accessed
+![Services with Ports](screenshots/PROMETHEUS_SERVER.png)
 
 ### Final Application LIVE & Running URL LINK:
 
