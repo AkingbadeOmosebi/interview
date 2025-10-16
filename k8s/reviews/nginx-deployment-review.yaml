@@ -1,0 +1,20 @@
+apiVersion: apps/v1       # Api version
+kind: Deployment          # Type of Manifest (kind, pod, svc, etc)
+metadata:                 # Information about the app
+  name: nginx-demo        # App name
+  namespace: default      # Namespace where it needs to be isolated in, in this case Default.
+spec:                     # specs for the deployment
+  replicas: 2             # Minimum amount of copies which must be provisioned
+  selector:               
+    matchLabels:          # Specified labels
+      app: nginx-demo     # App Name to match metadata
+  template:
+    metadata:
+      labels:
+        app: nginx-demo
+    spec:
+      containers:     
+        - name: nginx           # Container name 
+          image: nginx:1.25     # Image and Tag of image (Latest, SHA, SemVer, etc)
+          ports:                # Where it communicates from 
+            - containerPort: 80  # Port Number to communicate with HTTP, in this case Nginx is serving as a web-server.
