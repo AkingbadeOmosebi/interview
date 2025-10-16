@@ -1,0 +1,15 @@
+alertmanagerSpec:
+  config:
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: akingbadeomosebi@gmail.com
+      smtp_auth_username: akingbadeomosebi@gmail.com
+      smtp_auth_password: 'YOUR_APP_PASSWORD'  # Use a Gmail App Password
+    route:
+      receiver: 'email-notifications'
+    receivers:
+      - name: 'email-notifications'
+        email_configs:
+          - to: akingbadeomosebi@gmail.com
+            send_resolved: true
+            # NOTE: Hardcoded for demo. In production, reference a Kubernetes secret instead.
