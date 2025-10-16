@@ -4,7 +4,7 @@ alertmanagerSpec:
       smtp_smarthost: 'smtp.gmail.com:587'
       smtp_from: akingbadeomosebi@gmail.com
       smtp_auth_username: akingbadeomosebi@gmail.com
-      smtp_auth_password: 'YOUR_APP_PASSWORD'  # Use a Gmail App Password
+      smtp_auth_password: 'YOUR_APP_PASSWORD'  # Use a Gmail App Password, already saved as a sealed secret 
     route:
       receiver: 'email-notifications'
     receivers:

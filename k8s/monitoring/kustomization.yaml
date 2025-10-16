@@ -1,0 +1,4 @@
+resources:
+  - prometheus-app.yaml
+  - notification/alert-manager-config.yaml
+  - secrets/grafana-admin-secret.yaml
