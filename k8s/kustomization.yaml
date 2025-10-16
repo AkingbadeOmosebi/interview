@@ -3,3 +3,8 @@ resources:
   - service.yaml
   - ngrok-agent-deployment.yaml
   - ngrok-secret.yaml
+  - dashboards/
+  - alerts/
+  - notification/
+  - secrets/
+  - prometheus-app.yaml
