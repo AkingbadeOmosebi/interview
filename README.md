@@ -1,13 +1,19 @@
 # Project "Opsfolio" - The Evolved Interview App.
 
   - Opsfolio: From Interview Task → DevSecOps Mastery.
-  - This repository demonstrates how a simple interview app became a production-ready, security-hardened DevOps portfolio project.
+  - This repository demonstrates how a simple technical interview assessment app became a production-ready, security-hardened DevSecOps portfolio project.
 
-# Intro Section
 
-  - Originally built as part of a DevOps technical assessment, this project has been refined and extended into my personal DevSecOps portfolio showcase.
+![Build & Trivy Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-build-trivy-scan.yml/badge.svg)
+![Docker Push After Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-push-after-scan.yaml/badge.svg)
+![GitLeaks](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-git-leaks.yml/badge.svg)
+![MegaLinter](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-mega-linter.yml/badge.svg)
+![SonarCloud](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AkingbadeOmosebi_interview&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=AkingbadeOmosebi_interview)
+![App Type](https://img.shields.io/badge/App-Static%20Portfolio-blue)
+![Tech Stack](https://img.shields.io/badge/Stack-Docker%20|%20Nginx%20|%20CI%2FCD-lightgrey)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-   * The application, originally named Interview App, now serves as a practical demonstration of my growth and skillset.
 
   - In short: it started as an interview task, now it’s my Opsfolio: a hands-on reflection of how I can build, secure, and deploy software.
 
