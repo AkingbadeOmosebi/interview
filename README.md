@@ -64,6 +64,7 @@ The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and
                                           |  - SonarCloud Scan  |
                                           |  - Build & Push     |
                                           |    Docker Image     |
+                                          |   (To GHCR)         |
                                           |                     |
                                           +---------------------+
                                                   |
