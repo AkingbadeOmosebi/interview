@@ -1,16 +1,21 @@
-# Ignore Git and CI-related files
+# .dockerignore for static web app
+
+# Git and editor files
 .git
 .gitignore
-.github/
-*.md
-
-# Ignore local OS and IDE files
-Thumbs.db
 .vscode/
+.DS_Store
 
-# Ignore Docker build files themselves
-.dockerignore
-
-# Ignore build cache or temp files
+# Local environment / secret files
+.env
+.env.local
 *.log
-tmp/
+
+# OS or temp files
+Thumbs.db
+*.tmp
+*.swp
+
+# Optional: docs or readme not needed in container
+README.md
+*.md

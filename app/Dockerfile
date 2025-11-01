@@ -22,5 +22,9 @@ LABEL org.opencontainers.image.title="Portfolio Web App" \
 # Expose port 80 for HTTP
 EXPOSE 80
 
+
+# Added Health check (optional but good practice for container life)
+HEALTHCHECK CMD wget --spider -q http://localhost:80 || exit 1
+
 # Start Nginx in the foreground (required for Docker)
 CMD ["nginx", "-g", "daemon off;"]
