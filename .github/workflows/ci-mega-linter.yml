@@ -55,6 +55,24 @@ jobs:
           # improve performance
           fetch-depth: 0
 
+          # To skip if code dir isnt modified
+      - name: Check if app code changed
+        id: check_changes
+        run: |
+          # If there is no parent commit (first commit) treat as changed
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            if git diff --quiet HEAD^ HEAD -- ./app; then
+              echo "No changes detected in ./app"
+              echo "changes_detected=false" >> $GITHUB_OUTPUT
+            else
+              echo "Changes detected in ./app"
+              echo "changes_detected=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No parent commit found — treating as changed"
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+          fi   
+
       # MegaLinter
       - name: MegaLinter
 

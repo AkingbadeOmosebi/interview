@@ -13,6 +13,9 @@ COPY . /usr/share/nginx/html
 # Optional: fix ownership to match existing nginx user which is prsent in nginx
 RUN chown -R 101:101 /usr/share/nginx/html
 
+# Trivy libtiff CVE patch
+RUN apk update && apk upgrade libtiff
+
 # Optional metadata labels
 LABEL org.opencontainers.image.title="Portfolio Web App" \
       org.opencontainers.image.description="Static Portfolio HTML/CSS/JS website served by Nginx" \
