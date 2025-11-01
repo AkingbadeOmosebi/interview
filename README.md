@@ -9,7 +9,7 @@
 ![GitLeaks](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-git-leaks.yml/badge.svg)
 ![MegaLinter](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-mega-linter.yml/badge.svg)
 ![SonarCloud](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=AkingbadeOmosebi_interview&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=AkingbadeOmosebi_interview)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=akingbade_interview_portfolio&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=akingbade_interview_portfolio)
 ![App Type](https://img.shields.io/badge/App-Static%20Portfolio-blue)
 ![Tech Stack](https://img.shields.io/badge/Stack-Docker%20|%20Nginx%20|%20CI%2FCD-lightgrey)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
