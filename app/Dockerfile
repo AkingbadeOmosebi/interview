@@ -13,8 +13,8 @@ COPY . /usr/share/nginx/html
 # Optional: fix ownership to match existing nginx user which is prsent in nginx
 RUN chown -R 101:101 /usr/share/nginx/html
 
-# Trivy libtiff CVE patch
-RUN apk update && apk upgrade libtiff
+# Security patch best practice: keep OS packages updated
+RUN apk update && apk upgrade --no-cache
 
 # Optional metadata labels
 LABEL org.opencontainers.image.title="Portfolio Web App" \
