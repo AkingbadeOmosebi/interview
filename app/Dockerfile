@@ -1,5 +1,9 @@
 # Dockerfile for portfolio web app
 
+#Because my app is pure static content with no build dependencies, I will not introduce unnecessary stages or tools like npm.
+#Instead, I focused on production polish, I will run Nginx as a non-root user, add metadata and a healthcheck for monitoring, and keep the image small.
+#This keeps it clean and secure while still being deployment-ready.
+
 # Base image: lightweight Nginx Alpine
 FROM nginx:1.27-alpine
 
