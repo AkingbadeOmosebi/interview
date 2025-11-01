@@ -17,10 +17,11 @@ RUN chown -R 101:101 /usr/share/nginx/html
 RUN apk update && apk upgrade --no-cache
 
 # Optional metadata labels
-LABEL org.opencontainers.image.title="Portfolio Web App" \
-      org.opencontainers.image.description="Static Portfolio HTML/CSS/JS website served by Nginx" \
+LABEL org.opencontainers.image.title="Opsfolio - Interview App" \
+      org.opencontainers.image.description="Refined DevSecOps portfolio project evolved from a technical interview challenge." \
       org.opencontainers.image.authors="Akingbade Omosebi" \
-      org.opencontainers.image.version="1.0.0"
+      org.opencontainers.image.version="2.0.0"
+
 
 # Expose port 80 for HTTP
 EXPOSE 80

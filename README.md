@@ -1,8 +1,21 @@
-# Cardmarket CI/CD & GitOps Project Assessment Documentation #
+# Project "Opsfolio" - The Evolved Interview App.
+
+  - Opsfolio: From Interview Task → DevSecOps Mastery.
+  - This repository demonstrates how a simple interview app became a production-ready, security-hardened DevOps portfolio project.
+
+# Intro Section
+
+  - Originally built as part of a DevOps technical assessment, this project has been refined and extended into my personal DevSecOps portfolio showcase.
+
+   * The application, originally named Interview App, now serves as a practical demonstration of my growth and skillset.
+
+  - In short: it started as an interview task, now it’s my Opsfolio: a hands-on reflection of how I can build, secure, and deploy software.
 
 # Project Overview
 
-This project demonstrates a fully automated CI/CD pipeline for a custom web application using modern DevOps and GitOps practices. The pipeline includes linting, code quality checks, containerized builds, vulnerability scanning, and automated deployment with semantic versioning and redundancy checks. The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and ArgoCD Image Updater.
+This project demonstrates a fully automated CI/CD pipeline for a custom web application using modern DevOps and GitOps practices. The pipeline includes linting, code quality checks, containerized builds, vulnerability scanning, and automated deployment with semantic versioning and redundancy checks. 
+
+The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and ArgoCD Image Updater.
 
 
    * Main Objectives:
@@ -15,7 +28,7 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
 
     - Keep the container registry clean with semantic versioning and change detection.
 
-    - Enable external access to the cluster for testing and security hardening.
+    - Enable external access and endpoint protections to the cluster for testing and security hardening.
 
 
  ### TL;DR. FINAL APPLICATION RUNNING LINK + ASCII DIAGRAM:
@@ -45,11 +58,13 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
                                           +---------------------+
                                           |                     |
                                           |  CI/CD Workflows    |
+                                          |  - GitLeaks (Scan)  |
                                           |  - Megalinter       |
                                           |  - Trivy Scan       |
                                           |  - SonarCloud Scan  |
                                           |  - Build & Push     |
                                           |    Docker Image     |
+                                          |                     |
                                           +---------------------+
                                                   |
                                                   v
@@ -111,7 +126,7 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
 ```
 
 
-1. Application Setup
+0. Application Setup
 
    - Technology: Custom HTML, CSS, JS application.
 
@@ -136,6 +151,17 @@ This project demonstrates a fully automated CI/CD pipeline for a custom web appl
 Why:
 
  - Docker ensures that the app runs identically across all environments, avoiding “it works on my machine” issues.
+
+
+1. GITLEAKS (CI) Pipeline
+
+* 1.1. GitLeaks:
+
+    - Purpose: To scan and capture confidential or sensitive data before it reaches the repo.
+
+    - Config: showcased to capture stuffs like API keys if included, passwords, tokens, authkeys, etc.
+
+    - Outcome: Prevents the publishing of sensitive data to prevent compromise of information.
 
 
 
