@@ -14,7 +14,34 @@ jobs:
       IMAGE_NAME: interview-app
 
     steps:
-      # 1. Checkout repository with full history for semantic-release
+      # 1. Check if build was required in previous workflow
+      - name: Download build status
+        uses: actions/download-artifact@v4
+        with:
+          name: build-status
+          path: /tmp/build-status
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Check build status
+        id: check_status
+        run: |
+          if [ -f /tmp/build-status/status.txt ]; then
+            source /tmp/build-status/status.txt
+            echo "build_required=$BUILD_REQUIRED" >> $GITHUB_OUTPUT
+            
+            if [ "$BUILD_REQUIRED" == "false" ]; then
+              echo " No app changes detected in previous workflow - skipping release"
+            else
+              echo " App changes detected - proceeding with release"
+            fi
+          else
+            echo " No status file found - assuming build required"
+            echo "build_required=true" >> $GITHUB_OUTPUT
+          fi
+
+      # 2. Checkout repository with full history for semantic-release
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -97,18 +124,22 @@ jobs:
           docker push $REGISTRY/$IMAGE_NAME:$SEMVER
           docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
 
-      # 10. Create workflow summary
+      # 11. Create workflow summary
       - name: Workflow Summary
         if: always()
         run: |
           echo "## Release and Push Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
-            echo "###  Release Created" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_status.outputs.build_required }}" == "false" ]; then
+            echo "### Workflow Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "No changes detected in \`./app\` directory from previous workflow." >> $GITHUB_STEP_SUMMARY
+            echo "No build or release actions were performed." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
+            echo "### Release Created" >> $GITHUB_STEP_SUMMARY
             echo "**Version:** \`v${{ steps.semantic.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "###  Docker Images Pushed" >> $GITHUB_STEP_SUMMARY
+            echo "### Docker Images Pushed" >> $GITHUB_STEP_SUMMARY
             REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
             echo "- \`$REGISTRY/$IMAGE_NAME:latest\`" >> $GITHUB_STEP_SUMMARY
             echo "- \`$REGISTRY/$IMAGE_NAME:${{ steps.semantic.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY

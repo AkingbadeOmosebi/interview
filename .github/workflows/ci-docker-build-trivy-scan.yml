@@ -58,7 +58,27 @@ jobs:
           exit-code: 1
           severity: 'CRITICAL,HIGH'
 
-      # 6. Create workflow summary
+      # 6. Create status artifact for next workflow
+      - name: Create build status artifact
+        if: always()
+        run: |
+          mkdir -p /tmp/build-status
+          if [ "${{ steps.check_changes.outputs.changed }}" == "true" ] && [ "${{ job.status }}" == "success" ]; then
+            echo "BUILD_REQUIRED=true" > /tmp/build-status/status.txt
+            echo "SHORT_SHA=$SHORT_SHA" >> /tmp/build-status/status.txt
+          else
+            echo "BUILD_REQUIRED=false" > /tmp/build-status/status.txt
+          fi
+
+      - name: Upload build status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-status
+          path: /tmp/build-status/
+          retention-days: 1
+
+      # 8. Create workflow summary
       - name: Workflow Summary
         if: always()
         run: |
@@ -69,7 +89,7 @@ jobs:
             if [ "${{ job.status }}" == "success" ]; then
               echo " Trivy scan passed - No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
             else
-              echo "❌ Trivy scan failed - Critical vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+              echo " Trivy scan failed - Critical vulnerabilities found" >> $GITHUB_STEP_SUMMARY
             fi
           else
             echo " No changes in \`./app\` - Skipped build and scan" >> $GITHUB_STEP_SUMMARY
