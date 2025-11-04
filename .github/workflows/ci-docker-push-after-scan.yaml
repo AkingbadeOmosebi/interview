@@ -1,66 +1,120 @@
-name: Push Image to GHCR
+name: Build, Semantic Tag and Push
 
 on:
   workflow_run:
-    workflows: ["Build and Scan with Trivy"] 
+    workflows: ["Build and Scan with Trivy"]
     types: [completed]
-# I want it to only push after the build and scan condition has been met or is successful,
-# to prevent vulnerable images from being pushed to my private registry.
 
 jobs:
-  push:
+  semantic_release_and_push:
+    # Only run if Trivy scan passed
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    # This ensures the workflow only runs if the Trivy scan was successful.
-
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write 
-      # Required to push to GHCR
-
     env:
       IMAGE_NAME: interview-app
-      SHORT_SHA: ${{ github.sha }}
-      SEMVER: 1.0.${{ github.run_number }}
 
     steps:
+      # 1. Checkout repository with full history for semantic-release
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Check if app code changed
-        # This is to skip biuld and push if there is no change in my application code, helps me prevent redudntant images in regisryy
+      # 2. Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Run Semantic Release and capture version
+      - name: Run Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git fetch --depth=2
-          if git diff --quiet HEAD^ HEAD -- ./app; then
-            echo "No changes in app, skipping Docker build and push."
-            exit 0
+          # Run semantic-release and capture output
+          npx semantic-release > release_output.txt 2>&1
+          cat release_output.txt
+          
+          # Extract version from output (if released)
+          if grep -q "Published release" release_output.txt; then
+            VERSION=$(grep "Published release" release_output.txt | grep -oP '\d+\.\d+\.\d+' | head -1)
+            echo "New version released: $VERSION"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "released=true" >> $GITHUB_OUTPUT
+          else
+            echo "No new release created"
+            echo "released=false" >> $GITHUB_OUTPUT
           fi
 
+      # 5. Set environment variables
+      - name: Set environment variables
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          echo "SEMVER=${{ steps.semantic.outputs.version }}" >> $GITHUB_ENV
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      # 6. Build Docker image with all tags
+      - name: Build Docker image
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          docker build \
+            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:$SEMVER \
+            -t $IMAGE_NAME:$SHORT_SHA \
+            ./app
+
+      # 7. Log in to GitHub Container Registry
       - name: Log in to GHCR
-        # Using my already crafted personal access token stored as GHCR_PAT secret
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Set lowercase registry and short SHA
+        if: steps.semantic.outputs.released == 'true'
         run: |
-          # Convert GitHub repository owner to lowercase for Docker and prefix ghcr.io
-          REGISTRY="ghcr.io/$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
-          SHORT_SHA=${GITHUB_SHA::7}
-          echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          echo "SEMVER=$SEMVER" >> $GITHUB_ENV
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image again before push
-        # The image built in the previous workflow does not persist between jobs. Basically, new ubuntu runner, needs its own image build
-        # so we need to rebuild it before tagging and pushing.
+      # 8. Tag images for GHCR
+      - name: Tag Docker images for GHCR
+        if: steps.semantic.outputs.released == 'true'
         run: |
-          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SEMVER ./app
-
-      - name: Push image to GHCR
-        run: |
+          REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          
           docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
-          docker tag $IMAGE_NAME:$SHORT_SHA $REGISTRY/$IMAGE_NAME:$SHORT_SHA
           docker tag $IMAGE_NAME:$SEMVER $REGISTRY/$IMAGE_NAME:$SEMVER
+          docker tag $IMAGE_NAME:$SHORT_SHA $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+
+      # 9. Push Docker images to GHCR
+      - name: Push Docker images to GHCR
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          
+          echo "Pushing images to $REGISTRY/$IMAGE_NAME..."
           docker push $REGISTRY/$IMAGE_NAME:latest
-          docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
           docker push $REGISTRY/$IMAGE_NAME:$SEMVER
+          docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+
+      # 10. Create workflow summary
+      - name: Workflow Summary
+        if: always()
+        run: |
+          echo "## Release and Push Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
+            echo "###  Release Created" >> $GITHUB_STEP_SUMMARY
+            echo "**Version:** \`v${{ steps.semantic.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "###  Docker Images Pushed" >> $GITHUB_STEP_SUMMARY
+            REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+            echo "- \`$REGISTRY/$IMAGE_NAME:latest\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`$REGISTRY/$IMAGE_NAME:${{ steps.semantic.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`$REGISTRY/$IMAGE_NAME:${{ env.SHORT_SHA }}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### No Release Created" >> $GITHUB_STEP_SUMMARY
+            echo "No commits matched the release criteria." >> $GITHUB_STEP_SUMMARY
+            echo "Semantic versioning requires conventional commits (feat:, fix:, etc.)" >> $GITHUB_STEP_SUMMARY
+          fi
