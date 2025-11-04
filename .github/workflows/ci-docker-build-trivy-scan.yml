@@ -5,47 +5,72 @@ on:
     workflows: ["CI - SonarCloud scan"]
     types: [completed]
 
-# This will depend on the completion of the former pipeline sonarcloud
-
 jobs:
-  build_scan:
+  build_and_scan:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-   # condition set for next step
+    outputs:
+      changes_detected: ${{ steps.check_changes.outputs.changed }}
+      short_sha: ${{ steps.set_vars.outputs.short_sha }}
     env:
       IMAGE_NAME: interview-app
-      SHORT_SHA: ${{ github.sha }}
-      REGISTRY: ghcr.io/${{ github.repository_owner }}
 
     steps:
-      - uses: actions/checkout@v4
+      # 1. Checkout with enough history for diff
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Set lowercase registry, short SHA, and SemVer
+      # 2. Set environment variables
+      - name: Set environment variables
+        id: set_vars
         run: |
-          # Convert GitHub repository owner to lowercase for Docker
-          REGISTRY=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
           SHORT_SHA=${GITHUB_SHA::7}
-          # Auto-increment SemVer patch using GitHub run number
-          SEMVER="1.0.${{ github.run_number }}"
-          echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          echo "SEMVER=$SEMVER" >> $GITHUB_ENV
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
 
+      # 3. Check if app code changed
       - name: Check if app code changed
+        id: check_changes
         run: |
-          git fetch --depth=2
           if git diff --quiet HEAD^ HEAD -- ./app; then
-            echo "No changes in app, skipping Docker build and Trivy scan."
-            exit 0
+            echo "No changes in app directory"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in app directory"
+            echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
+      # 4. Build Docker image (only if changes detected)
       - name: Build Docker image
+        if: steps.check_changes.outputs.changed == 'true'
         run: |
-          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SEMVER ./app
+          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest ./app
 
-      - name: Run Trivy scan
+      # 5. Run Trivy scan (only if changes detected)
+      - name: Run Trivy vulnerability scan
+        if: steps.check_changes.outputs.changed == 'true'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.IMAGE_NAME }}:latest
           format: table
-          exit-code: 1  # fail if vulnerabilities
+          exit-code: 1
+          severity: 'CRITICAL,HIGH'
+
+      # 6. Create workflow summary
+      - name: Workflow Summary
+        if: always()
+        run: |
+          echo "## Build and Scan Summary" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_changes.outputs.changed }}" == "true" ]; then
+            echo " Changes detected in \`./app\`" >> $GITHUB_STEP_SUMMARY
+            echo " Docker image built: \`$IMAGE_NAME:$SHORT_SHA\`" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ job.status }}" == "success" ]; then
+              echo " Trivy scan passed - No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ Trivy scan failed - Critical vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo " No changes in \`./app\` - Skipped build and scan" >> $GITHUB_STEP_SUMMARY
+          fi
