@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.1.0...v1.1.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* resolved svg icons ([ead69b0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/ead69b0ae98032c6f13968d75a87413ba76a6438))
+
 # [1.1.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.0.1...v1.1.0) (2025-11-07)
 
 
