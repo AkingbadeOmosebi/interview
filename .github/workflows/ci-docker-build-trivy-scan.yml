@@ -1,8 +1,8 @@
-name: CI - Build, Scan, Semantic Release & Docker Push
+name: CI - Docker-Build, Trivy-Scan, Semantic-Release & Docker-Push
 
 on:
   workflow_run:
-    workflows: ["CI - SonarCloud scan"]
+    workflows: ["CI - OWASP Dependency Scan"]
     types: [completed]
 
 permissions:
