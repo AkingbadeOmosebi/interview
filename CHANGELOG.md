@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.0.0...v1.0.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* permissions ([de1f179](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/de1f17980d8b1ed1fbeb79a4434f2ea8024ffb0c))
+
 # 1.0.0 (2025-11-07)
 
 
