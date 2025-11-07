@@ -1,55 +1,69 @@
-name: Build and Scan with Trivy
+name: CI - Build, Scan, Semantic Release & Docker Push
 
 on:
   workflow_run:
     workflows: ["CI - SonarCloud scan"]
     types: [completed]
 
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  build_and_scan:
+  build_scan_release_push:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       changes_detected: ${{ steps.check_changes.outputs.changed }}
-      short_sha: ${{ steps.set_vars.outputs.short_sha }}
     env:
       IMAGE_NAME: interview-app
 
     steps:
-      # 1. Checkout with enough history for diff
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2. Set environment variables
-      - name: Set environment variables
-        id: set_vars
-        run: |
-          SHORT_SHA=${GITHUB_SHA::7}
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+      # Fetch all tags explicitly
+      - name: Fetch all tags
+        run: git fetch --tags
 
-      # 3. Check if app code changed
-      - name: Check if app code changed
+      # 2️ Setup Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # 3️ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️ Check if app changed
+      - name: Check if app changed
         id: check_changes
         run: |
           if git diff --quiet HEAD^ HEAD -- ./app; then
-            echo "No changes in app directory"
             echo "changed=false" >> $GITHUB_OUTPUT
           else
-            echo "Changes detected in app directory"
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      # 4. Build Docker image (only if changes detected)
+      # 5️ Build Docker image (always for changed code)
       - name: Build Docker image
         if: steps.check_changes.outputs.changed == 'true'
         run: |
-          docker build -t $IMAGE_NAME:$SHORT_SHA -t $IMAGE_NAME:latest ./app
+          SHORT_SHA=${GITHUB_SHA::7}
+          docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SHORT_SHA ./app
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
-      # 5. Run Trivy scan (only if changes detected)
-      - name: Run Trivy vulnerability scan
+      # 6️ Run Trivy scan
+      - name: Run Trivy scan
         if: steps.check_changes.outputs.changed == 'true'
         uses: aquasecurity/trivy-action@master
         with:
@@ -58,39 +72,73 @@ jobs:
           exit-code: 1
           severity: 'CRITICAL,HIGH'
 
-      # 6. Create status artifact for next workflow
-      - name: Create build status artifact
-        if: always()
+      # 7️ Semantic Release
+      - name: Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p /tmp/build-status
-          if [ "${{ steps.check_changes.outputs.changed }}" == "true" ] && [ "${{ job.status }}" == "success" ]; then
-            echo "BUILD_REQUIRED=true" > /tmp/build-status/status.txt
-            echo "SHORT_SHA=$SHORT_SHA" >> /tmp/build-status/status.txt
+          # Run semantic-release without failing workflow if no release
+          npx semantic-release > release_output.txt 2>&1 || true
+          cat release_output.txt
+
+          # Detect release
+          if grep -q "Published release" release_output.txt; then
+            VERSION=$(grep "Published release" release_output.txt | grep -oP '\d+\.\d+\.\d+' | head -1)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "released=true" >> $GITHUB_OUTPUT
           else
-            echo "BUILD_REQUIRED=false" > /tmp/build-status/status.txt
+            echo "released=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Upload build status
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-status
-          path: /tmp/build-status/
-          retention-days: 1
+      # 8️ Build Docker image with semantic version tag (if release created)
+      - name: Build Docker image with SemVer
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          docker build \
+            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:${{ steps.semantic.outputs.version }} \
+            -t $IMAGE_NAME:${GITHUB_SHA::7} ./app
+          echo "SEMVER=${{ steps.semantic.outputs.version }}" >> $GITHUB_ENV
 
-      # 8. Create workflow summary
+      # 9️ Login to GHCR
+      - name: Log in to GHCR
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      #  Tag Docker images for GHCR
+      - name: Tag Docker images
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          docker tag $IMAGE_NAME:latest $REGISTRY/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:$SEMVER $REGISTRY/$IMAGE_NAME:$SEMVER
+          docker tag $IMAGE_NAME:${GITHUB_SHA::7} $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
+
+      # 1️1️ Push Docker images to GHCR
+      - name: Push Docker images
+        if: steps.semantic.outputs.released == 'true'
+        run: |
+          REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+          docker push $REGISTRY/$IMAGE_NAME:latest
+          docker push $REGISTRY/$IMAGE_NAME:$SEMVER
+          docker push $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
+
+      # 1️2️ Workflow Summary
       - name: Workflow Summary
         if: always()
         run: |
-          echo "## Build and Scan Summary" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ steps.check_changes.outputs.changed }}" == "true" ]; then
-            echo " Changes detected in \`./app\`" >> $GITHUB_STEP_SUMMARY
-            echo " Docker image built: \`$IMAGE_NAME:$SHORT_SHA\`" >> $GITHUB_STEP_SUMMARY
-            if [ "${{ job.status }}" == "success" ]; then
-              echo " Trivy scan passed - No critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
-            else
-              echo " Trivy scan failed - Critical vulnerabilities found" >> $GITHUB_STEP_SUMMARY
-            fi
+          echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_changes.outputs.changed }}" == "false" ]; then
+            echo "No changes in ./app - skipped Docker build and scan." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
+            echo "Semantic Release created version: ${{ steps.semantic.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+            echo "Docker images pushed to GHCR:" >> $GITHUB_STEP_SUMMARY
+            REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+            echo "- $REGISTRY/$IMAGE_NAME:latest" >> $GITHUB_STEP_SUMMARY
+            echo "- $REGISTRY/$IMAGE_NAME:${{ steps.semantic.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+            echo "- $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}" >> $GITHUB_STEP_SUMMARY
           else
-            echo " No changes in \`./app\` - Skipped build and scan" >> $GITHUB_STEP_SUMMARY
+            echo "No release created - commit messages did not match semantic release rules." >> $GITHUB_STEP_SUMMARY
           fi
