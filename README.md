@@ -65,8 +65,9 @@ The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and
                                           |  CI/CD Workflows    |
                                           |  - GitLeaks (Scan)  |
                                           |  - Megalinter       |
+                                          |  - Sonarcloud Scan  |
                                           |  - Trivy Scan       |
-                                          |  - SonarCloud Scan  |
+                                          |  - Semantic Release |
                                           |  - Build & Push     |
                                           |    Docker Image     |
                                           |   (To GHCR)         |
