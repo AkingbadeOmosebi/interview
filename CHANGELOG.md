@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.0.1...v1.1.0) (2025-11-07)
+
+
+### Features
+
+* Integrated Owasp Dependency Scan ([31030f1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/31030f12e1cfe4dcc12125aa63a5a2c09d6b69b8))
+
 ## [1.0.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.0.0...v1.0.1) (2025-11-07)
 
 
