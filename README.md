@@ -4,7 +4,7 @@
   - This repository demonstrates how a simple technical interview assessment app became a production-ready, security-hardened DevSecOps portfolio project.
 
 
-![Docker Build & Push - Trivy Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-build-trivy-scan.yml/badge.svg)
+![Docker Build & Push - Trivy Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-build-&-push-trivy-scan.yml/badge.svg)
 ![GitLeaks](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-git-leaks.yml/badge.svg)
 ![MegaLinter](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-mega-linter.yml/badge.svg)
 ![SonarCloud](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)
