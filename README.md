@@ -2,6 +2,7 @@
 
   - Opsfolio: From Interview Task → DevSecOps Mastery.
   - This repository demonstrates how a simple technical interview assessment app became a production-ready, security-hardened DevSecOps portfolio project.
+  - In short: it started as an interview task, now it’s my Opsfolio: a hands-on reflection of how I can build, secure, and deploy software.
 
 
 
@@ -31,21 +32,6 @@
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/pkgs/container/interview-app)
 
 
-++++++++++++++++++++++++++++++++++++++++++++++
-
-![Docker Build & Push - Trivy Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-build-&-push-trivy-scan.yml/badge.svg)
-![GitLeaks](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-git-leaks.yml/badge.svg)
-![MegaLinter](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-mega-linter.yml/badge.svg)
-![SonarCloud SAST Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=akingbade_interview_portfolio&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=akingbade_interview_portfolio)
-![Snyk Security Scan](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-snyk.yml/badge.svg)
-[![Known Vulnerabilities](https://snyk.io/test/github/AkingbadeOmosebi/Opsfolio-Interview-App/badge.svg)](https://snyk.io/test/github/AkingbadeOmosebi/Opsfolio-Interview-App)
-![App Type](https://img.shields.io/badge/App-Static%20Portfolio-blue)
-![Tech Stack](https://img.shields.io/badge/Stack-Docker%20|%20Nginx%20|%20CI%2FCD-lightgrey)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
-
-
-  - In short: it started as an interview task, now it’s my Opsfolio: a hands-on reflection of how I can build, secure, and deploy software.
 
 # Project Overview
 
