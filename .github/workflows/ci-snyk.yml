@@ -38,12 +38,15 @@ jobs:
         continue-on-error: true
 
       # Upload the scan results to Snyk platform for ongoing monitoring and alerts
-      - name: Monitor project snapshot on Snyk dashboard
-        uses: snyk/actions/node@master
+      - name: Monitor dependencies
+        run: |
+         snyk monitor \
+           --org=${{ secrets.SNYK_ORG_ID }} \
+           --project-name="${{ github.repository }}" \
+           --remote-repo-url=https://github.com/${{ github.repository }} \
+           --target-reference=${{ github.ref_name }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
 
       # Run Snyk Code static analysis (SAST) on your codebase
       - name: Run Snyk Code scan (SAST)
