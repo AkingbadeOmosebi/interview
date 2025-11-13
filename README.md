@@ -4,6 +4,35 @@
   - This repository demonstrates how a simple technical interview assessment app became a production-ready, security-hardened DevSecOps portfolio project.
 
 
+
+## 🛡️ Security & CI/CD Pipeline
+
+### Pipeline Status
+[![Gitleaks](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-git-leaks.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-git-leaks.yml)
+[![MegaLinter](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-mega-linter.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-mega-linter.yml)
+[![SonarCloud](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-sonarcloud-security.yaml)
+[![Snyk Security](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-snyk.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-snyk.yml)
+[![Docker Build & Push](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-docker-build-&-push-trivy-scan.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-docker-build-&-push-trivy-scan.yml)
+
+### Security Metrics
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Known Vulnerabilities](https://snyk.io/test/github/AkingbadeOmosebi/Opsfolio-Interview-App/badge.svg)](https://snyk.io/test/github/AkingbadeOmosebi/Opsfolio-Interview-App)
+
+### Code Quality
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=bugs)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=coverage)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=YOUR_PROJECT_KEY&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=YOUR_PROJECT_KEY)
+
+### Release & Container
+[![semantic-release: conventional-commits](https://img.shields.io/badge/semantic--release-conventional--commits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+[![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/pkgs/container/interview-app)
+
+
+++++++++++++++++++++++++++++++++++++++++++++++
+
 ![Docker Build & Push - Trivy Scan](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-docker-build-&-push-trivy-scan.yml/badge.svg)
 ![GitLeaks](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-git-leaks.yml/badge.svg)
 ![MegaLinter](https://github.com/AkingbadeOmosebi/interview/actions/workflows/ci-mega-linter.yml/badge.svg)
