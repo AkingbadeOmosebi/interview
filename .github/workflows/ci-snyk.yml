@@ -1,0 +1,55 @@
+name: Snyk Dependency Scan
+
+on:
+  workflow_run:
+    workflows: ["MegaLinter"]  # Triggered after this workflow completes
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  snyk_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout your code for scanning
+      - uses: actions/checkout@v4
+
+      # Set up Node.js (adjust version as needed)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      # Install dependencies - Snyk needs this to analyze your project
+      - name: Install dependencies
+        run: npm ci
+
+      # Run Snyk vulnerability test
+      # continue-on-error allows workflow to continue even if vulnerabilities found
+      - name: Run Snyk open-source vulnerability test
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+        continue-on-error: true
+
+      # Upload the scan results to Snyk platform for ongoing monitoring and alerts
+      - name: Monitor project snapshot on Snyk dashboard
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+
+      # Run Snyk Code static analysis (SAST) on your codebase
+      - name: Run Snyk Code scan (SAST)
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+        continue-on-error: true

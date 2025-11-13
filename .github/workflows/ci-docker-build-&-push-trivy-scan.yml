@@ -2,7 +2,7 @@ name: CI - Docker-Build, Trivy-Scan, Semantic-Release & Docker-Push
 
 on:
   workflow_run:
-    workflows: ["CI - SonarCloud scan"]
+    workflows: ["Snyk Dependency Scan"]
     types: [completed]
 
 permissions:
