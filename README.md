@@ -54,7 +54,7 @@ The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and
 +-----------------+        Git Push       +---------------------------+
 |                 |  ----------------->  |                           |
 |  Developer      |                      |  GitHub Repository        |
-|  (Local Code)   |                      |  (Application + K8s YAML)|
+|  (Local Code)   |                      |  (Application + K8s YAML) |
 |                 |                      |                           |
 +-----------------+                      +---------------------------+
                                                   |
@@ -62,11 +62,13 @@ The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and
                                                   v
                                           +---------------------+
                                           |                     |
-                                          |  CI/CD Workflows    |
+                                          |   CI/CD Workflows   |
+                                          |          ↓          |
                                           |  - GitLeaks (Scan)  |
-                                          |  - Megalinter       |
-                                          |  - Sonarcloud Scan  |
-                                          |  - Trivy Scan       |
+                                          |  - Megalinter (Scan)|
+                                          |  - Sonarcloud (Scan)|
+                                          |  - Snyk SCA (Scan)  |
+                                          |  - Trivy (Scan)     |
                                           |  - Semantic Release |
                                           |  - Build & Push     |
                                           |    Docker Image     |
@@ -90,7 +92,7 @@ The environment uses a local K3s Kubernetes cluster orchestrated with ArgoCD and
            +----------------+           +---------------------+
            |                |           |                     |
            |  K3s Cluster   |<--------->|  SealedSecrets      |
-           |  (Local / EC2) |           |  & Secrets Mgmt     |
+           |  (Local / EKS) |           |  & Secrets Mgmt     |
            | - Namespaces   |           | - Grafana Admin     |
            | - Deployments  |           | - Alertmanager SMTP |
            | - Services     |           | - DB & API Keys     |
