@@ -13,64 +13,40 @@ permissions:
   pull-requests: write
   id-token: write
 
+
 jobs:
-
-  debug_info:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Debug workflow_run event
-        run: |
-          echo "=== Workflow Run Debug Info ==="
-          echo "Workflow name: ${{ github.event.workflow_run.name }}"
-          echo "Workflow conclusion: ${{ github.event.workflow_run.conclusion }}"
-          echo "Workflow status: ${{ github.event.workflow_run.status }}"
-          echo "Head SHA: ${{ github.event.workflow_run.head_sha }}"
-          echo "Head branch: ${{ github.event.workflow_run.head_branch }}"
-          echo "Event: ${{ github.event.workflow_run.event }}"
-
   build_scan_release_push:
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'workflow_call' ||
-      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    outputs:
-      changes_detected: ${{ steps.check_changes.outputs.changed }}
     env:
       IMAGE_NAME: interview-app
 
     steps:
-      - name: Workflow trigger info
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Triggered by: ${{ github.event.workflow_run.name || 'manual/call' }}"
-          echo "Conclusion: ${{ github.event.workflow_run.conclusion || 'N/A' }}  
-
-    
       # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Fetch all tags explicitly
+
+      # Fetch all tags explictely
+       
       - name: Fetch all tags
         run: git fetch --tags
 
-      # 2️ Setup Node.js
+
+      # 2️⃣ Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'npm'
 
-      # 3️ Install dependencies
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4️ Check if app changed
+      # 4️⃣ Check if app changed
       - name: Check if app changed
         id: check_changes
         run: |
@@ -86,7 +62,7 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      # 5️ Build Docker image (always for changed code)
+      # 5️⃣ Build Docker image (always for changed code)
       - name: Build Docker image
         if: steps.check_changes.outputs.changed == 'true'
         run: |
@@ -94,7 +70,7 @@ jobs:
           docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SHORT_SHA ./app
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
-      # 6️ Run Trivy scan
+      # 6️⃣ Run Trivy scan
       - name: Run Trivy scan
         if: steps.check_changes.outputs.changed == 'true'
         uses: aquasecurity/trivy-action@master
@@ -104,7 +80,7 @@ jobs:
           exit-code: 1
           severity: 'CRITICAL,HIGH'
 
-      # 7️ Semantic Release
+      # 7️⃣ Semantic Release
       - name: Semantic Release
         id: semantic
         env:
@@ -123,7 +99,7 @@ jobs:
             echo "released=false" >> $GITHUB_OUTPUT
           fi
 
-      # 8️ Build Docker image with semantic version tag (if release created)
+      # 8️⃣ Build Docker image with semantic version tag (if release created)
       - name: Build Docker image with SemVer
         if: steps.semantic.outputs.released == 'true'
         run: |
@@ -133,13 +109,13 @@ jobs:
             -t $IMAGE_NAME:${GITHUB_SHA::7} ./app
           echo "SEMVER=${{ steps.semantic.outputs.version }}" >> $GITHUB_ENV
 
-      # 9️ Login to GHCR
+      # 9️⃣ Login to GHCR
       - name: Log in to GHCR
         if: steps.semantic.outputs.released == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      #  Tag Docker images for GHCR
+      # 🔟 Tag Docker images for GHCR
       - name: Tag Docker images
         if: steps.semantic.outputs.released == 'true'
         run: |
@@ -148,7 +124,7 @@ jobs:
           docker tag $IMAGE_NAME:$SEMVER $REGISTRY/$IMAGE_NAME:$SEMVER
           docker tag $IMAGE_NAME:${GITHUB_SHA::7} $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
 
-      # 1️1️ Push Docker images to GHCR
+      # 1️⃣1️⃣ Push Docker images to GHCR
       - name: Push Docker images
         if: steps.semantic.outputs.released == 'true'
         run: |
@@ -157,7 +133,7 @@ jobs:
           docker push $REGISTRY/$IMAGE_NAME:$SEMVER
           docker push $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
 
-      # 1️2️ Workflow Summary
+      # 1️⃣2️⃣ Workflow Summary
       - name: Workflow Summary
         if: always()
         run: |

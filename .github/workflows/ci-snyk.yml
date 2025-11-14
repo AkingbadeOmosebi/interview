@@ -72,16 +72,3 @@ jobs:
         run: |
           echo "Snyk scan completed (vulnerabilities may exist, check Snyk dashboard)"
           exit 0
-
-    # Trigger Docker build directly from this workflow
-  trigger_docker_build:
-    needs: snyk_scan
-    if: always()
-    uses: ./.github/workflows/ci-docker-build-&-push-trivy-scan.yml
-    secrets: inherit
-    permissions:
-      contents: write
-      packages: write
-      issues: write
-      pull-requests: write
-      id-token: write
