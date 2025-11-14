@@ -3,8 +3,8 @@ name: Snyk Dependency Scan
 on:
   workflow_run:
     workflows: ["CI - SonarCloud scan"]
-    types:
-      - completed
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
