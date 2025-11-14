@@ -28,6 +28,10 @@ jobs:
           echo "Event: ${{ github.event.workflow_run.event }}"
 
   build_scan_release_push:
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_call' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
       changes_detected: ${{ steps.check_changes.outputs.changed }}
@@ -35,6 +39,13 @@ jobs:
       IMAGE_NAME: interview-app
 
     steps:
+      - name: Workflow trigger info
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Triggered by: ${{ github.event.workflow_run.name || 'manual/call' }}"
+          echo "Conclusion: ${{ github.event.workflow_run.conclusion || 'N/A' }}  
+
+    
       # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
