@@ -1,3 +1,5 @@
+# Modified target port to 8080 to match! and fit Snyk Vulnerability fix in Deployment.yaml
+
 apiVersion: v1
 kind: Service     # Manifest defintion tyype
 metadata:
@@ -13,5 +15,5 @@ spec:
     - name: http        # Regular port 80 for http
       protocol: TCP     # Network protocol type
       port: 80          # The service port 
-      targetPort: 80  # It has to match the port in my deployment file
+      targetPort: 8080  # It has to match the port in my deployment file
       nodePort: 31080   # Optional: i will manually add a port; or else K8s assigns one for me
