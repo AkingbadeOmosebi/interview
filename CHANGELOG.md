@@ -1,3 +1,23 @@
+# [2.0.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.1.1...v2.0.0) (2025-11-14)
+
+
+* perf! Changing the base image of my dockerfile ([ed22f04](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/ed22f040653575bd9da4922633b9834b641945ea))
+* perf!: Changing the base image of my dockerfile ([95b1c8c](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/95b1c8cedae768df82087461bb862293df2f153a))
+
+
+### Bug Fixes
+
+* test ([b92e4c5](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/b92e4c595b96e0c52faf32863fd64c87b9d5df08))
+* test ([665ea1e](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/665ea1e94f31f3869aeb30cf1669d2de81627ecd))
+* update workflows for proper chaining ([3ce2102](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/3ce2102a6f7aec4a107a123936d14dc13a165880))
+
+
+### BREAKING CHANGES
+
+* Change base image to fix vulnerability as reported by Sn
+yk
+* Change base image to fix vulnerability as reported by Snyk
+
 ## [1.1.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.1.0...v1.1.1) (2025-11-07)
 
 
