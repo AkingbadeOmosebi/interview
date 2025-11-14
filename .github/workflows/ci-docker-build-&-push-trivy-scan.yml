@@ -13,8 +13,21 @@ permissions:
   id-token: write
 
 jobs:
+
+  debug_info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug workflow_run event
+        run: |
+          echo "=== Workflow Run Debug Info ==="
+          echo "Workflow name: ${{ github.event.workflow_run.name }}"
+          echo "Workflow conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow status: ${{ github.event.workflow_run.status }}"
+          echo "Head SHA: ${{ github.event.workflow_run.head_sha }}"
+          echo "Head branch: ${{ github.event.workflow_run.head_branch }}"
+          echo "Event: ${{ github.event.workflow_run.event }}"
+
   build_scan_release_push:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       changes_detected: ${{ steps.check_changes.outputs.changed }}
