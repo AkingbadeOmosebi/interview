@@ -13,12 +13,16 @@ spec:
       labels:
         app: ngrok-agent
     spec:
+      securityContext:
+        runAsNonRoot: true      # Ensures container runs as non-root user
+        runAsUser: 1000         # Specify a non-root user ID
+        fsGroup: 1000           # Set filesystem group
       containers:
         - name: ngrok-agent
           image: ngrok/ngrok:3
           args:
             - "http"
-            - "interview-app.default.svc.cluster.local:80"   # Target my app service
+            - "interview-app.default.svc.cluster.local:8080"   # Target my app service (updated to 8080 since i changed my service)
             - "--authtoken"
             - "$(NGROK_AUTH_TOKEN)"
             - "--log"
@@ -31,3 +35,31 @@ spec:
                   key: authtoken
           ports:
             - containerPort: 4040   # Ngrok Web UI for external accessing of ngrok
+          securityContext:
+            allowPrivilegeEscalation: false     # Prevents privilege escalation
+            capabilities:
+              drop:
+                - ALL                           # Drop all capabilities
+          livenessProbe:            # Checks if ngrok agent is alive
+            httpGet:
+              path: /status         # Ngrok web UI status endpoint
+              port: 4040
+            initialDelaySeconds: 30 # Wait 30s before first check
+            periodSeconds: 10       # Check every 10 seconds
+            timeoutSeconds: 5       # Timeout after 5 seconds
+            failureThreshold: 3     # Restart after 3 failed checks
+          readinessProbe:           # Checks if ngrok is ready to proxy traffic
+            httpGet:
+              path: /status         # Ngrok web UI status endpoint
+              port: 4040
+            initialDelaySeconds: 10 # Start checking after 10s
+            periodSeconds: 5        # Check every 5 seconds
+            timeoutSeconds: 3       # Timeout after 3 seconds
+            failureThreshold: 3     # Mark unready after 3 failed checks
+          resources:                # Resource limits for ngrok agent
+            requests:
+              cpu: "50m"            # Ngrok is lightweight
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
