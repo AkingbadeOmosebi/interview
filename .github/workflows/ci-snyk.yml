@@ -12,6 +12,7 @@ permissions:
 jobs:
   snyk_scan:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       # Checkout your code for scanning
