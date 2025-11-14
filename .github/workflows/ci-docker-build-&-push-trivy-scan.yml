@@ -1,6 +1,13 @@
 name: CI - Docker-Build, Trivy-Scan, Semantic-Release & Docker-Push
 
 on:
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Allow being called by other workflows
+  workflow_call:
+  
+  # Trigger after Snyk completes
   workflow_run:
     workflows: ["Snyk Dependency Scan"]
     types: [completed]
@@ -13,9 +20,13 @@ permissions:
   pull-requests: write
   id-token: write
 
-
 jobs:
   build_scan_release_push:
+    # Only run if triggered manually, by workflow_call, or if workflow_run succeeded
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'workflow_call' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: interview-app
@@ -25,15 +36,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-
-      # Fetch all tags explictely
-       
+      # Fetch all tags explicitly
       - name: Fetch all tags
         run: git fetch --tags
-
 
       # 2️⃣ Setup Node.js
       - name: Set up Node.js
@@ -138,15 +147,23 @@ jobs:
         if: always()
         run: |
           echo "## CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Event:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "**Triggered by:** ${{ github.event.workflow_run.name }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Conclusion:** ${{ github.event.workflow_run.conclusion }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           if [ "${{ steps.check_changes.outputs.changed }}" == "false" ]; then
-            echo "No changes in ./app - skipped Docker build and scan." >> $GITHUB_STEP_SUMMARY
+            echo "✋ No changes in ./app - skipped Docker build and scan." >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
-            echo "Semantic Release created version: ${{ steps.semantic.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-            echo "Docker images pushed to GHCR:" >> $GITHUB_STEP_SUMMARY
+            echo " Semantic Release created version: **${{ steps.semantic.outputs.version }}**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo " Docker images pushed to GHCR:" >> $GITHUB_STEP_SUMMARY
             REGISTRY="ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
-            echo "- $REGISTRY/$IMAGE_NAME:latest" >> $GITHUB_STEP_SUMMARY
-            echo "- $REGISTRY/$IMAGE_NAME:${{ steps.semantic.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-            echo "- $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}" >> $GITHUB_STEP_SUMMARY
+            echo "- \`$REGISTRY/$IMAGE_NAME:latest\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`$REGISTRY/$IMAGE_NAME:${{ steps.semantic.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- \`$REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}\`" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No release created - commit messages did not match semantic release rules." >> $GITHUB_STEP_SUMMARY
+            echo " No release created - commit messages did not match semantic release rules." >> $GITHUB_STEP_SUMMARY
           fi
