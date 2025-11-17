@@ -1,5 +1,5 @@
 # variables.tf
-# Centralized variables so you can change behaviour per environment easily.
+# Centralized variables so i can change behaviour per environment easily.
 
 variable "aws_region" {
   description = "AWS region to deploy resources"
@@ -52,11 +52,12 @@ variable "aws_auth_users" {
     groups   = list(string)
   }))
 
-  sensitive = true   # <<< Hide from CLI and logs
+  # >>> NOT marked as sensitive to avoid for_each error
+  # IAM ARNs are not secret - they're visible in AWS Console
+  # Only the credentials (access keys) are sensitive
 
-  default = []        # <<< No ARN committed to Git
+  default = []
 }
-
 
 variable "resource_tags" {
   description = "Tags to apply to resources for billing/identification"
@@ -68,4 +69,3 @@ variable "resource_tags" {
     Terraform   = "true"
   }
 }
-

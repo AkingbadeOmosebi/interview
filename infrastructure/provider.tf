@@ -4,7 +4,6 @@
 
 provider "aws" {
   region = var.aws_region
-  # >>> TIP: For local testing, export AWS_PROFILE or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY.
-  # >>> In Terraform Cloud, set these as environment variables in the workspace.
+  # For local testing, i can export AWS_PROFILE or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY.
+  # In Terraform Cloud, I set these as environment variables in the workspace.
 }
-

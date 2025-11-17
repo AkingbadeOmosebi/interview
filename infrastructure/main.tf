@@ -4,12 +4,11 @@
 
 
 # VPC: official terraform-aws-modules/vpc/aws
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
-  name = "${var.cluster_name}-vpc"      # >>> friendly name referencing cluster
+  name = "${var.cluster_name}-vpc" # >>> friendly name referencing cluster
   cidr = "10.0.0.0/16"
 
   azs             = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
@@ -19,47 +18,76 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
+  # Required tags for EKS to discover subnets
+  public_subnet_tags = {
+    "kubernetes.io/role/elb"                    = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb"           = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+  }
+
   tags = merge(var.resource_tags, { Name = "${var.cluster_name}-vpc" })
 }
 
 
 # EKS: official terraform-aws-modules/eks/aws
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.13.0"
+  version = "~> 20.0"
 
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
   # For quick demos we enable the public endpoint (convenient for kubeconfig).
-  # >>> WARNING: For production, prefer private endpoint + API access via bastion/jump host or secure CI runners.
   cluster_endpoint_public_access = true
 
   # Networking integration
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  # Managed node group configuration (single small node for cost control)
+  # Node group configuration
   eks_managed_node_groups = {
-    default = {
-      desired_capacity = var.desired_capacity
-      max_capacity     = var.max_capacity
-      min_capacity     = var.min_capacity
+    main = {
+      desired_size = var.desired_capacity
+      max_size     = var.max_capacity
+      min_size     = var.min_capacity
 
       instance_types = var.node_instance_types
 
-      # Node group tags
+      labels = {
+        role = "general"
+      }
+
       tags = merge(var.resource_tags, { Name = "${var.cluster_name}-ng" })
     }
   }
 
-  # Manage the aws-auth configmap via the module so your IAM users get Kubernetes RBAC mapping.
-  # The module will create the aws-auth configmap and map the listed IAM users to k8s subjects.
-  manage_aws_auth_configmap = true
-  aws_auth_users = var.aws_auth_users
+  # Enable cluster creator admin permissions
+  # This automatically grants the IAM principal creating the cluster admin access
+  enable_cluster_creator_admin_permissions = true
 
-  # Basic tags applied to cluster
+  # Basic tags applied to the cluster
   tags = merge(var.resource_tags, { Name = var.cluster_name })
 }
 
+
+# AWS Auth ConfigMap Management
+# >>> OFFICIAL DOCUMENTATION: https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/20.37.2/submodules/aws-auth
+# >>> In EKS module v20.x, aws-auth management is in a separate submodule
+module "eks_aws_auth" {
+  source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
+  version = "~> 20.0"
+
+  # Enable management of the aws-auth ConfigMap
+  manage_aws_auth_configmap = true
+
+  # Map additional IAM users to Kubernetes RBAC groups
+  # Format matches official documentation exactly
+  aws_auth_users = var.aws_auth_users
+
+  # Ensure EKS cluster is created before managing auth
+  depends_on = [module.eks]
+}
