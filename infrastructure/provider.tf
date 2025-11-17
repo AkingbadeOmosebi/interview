@@ -8,20 +8,6 @@ provider "aws" {
   # In Terraform Cloud, I set these as environment variables in the workspace.
 }
 
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_name
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_name
-}
-
-# provider.tf
-
-provider "aws" {
-  region = var.aws_region
-}
-
 # Use module outputs instead of using data sources (avoids timing issues)
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
