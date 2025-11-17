@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v2.0.0...v2.1.0) (2025-11-17)
+
+
+### Features
+
+* Added IaC config ([750b977](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/750b9776c3a4db7f776750bee34704c396c65353))
+
 # [2.0.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v1.1.1...v2.0.0) (2025-11-14)
 
 
