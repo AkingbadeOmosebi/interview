@@ -1,0 +1,63 @@
+# .github/workflows/terraform-destroy.yml
+# Manual workflow to destroy Terraform-managed EKS infrastructure
+
+name: "Terraform Destroy"
+
+# Only manual triggers (workflow_dispatch)
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: "Type YES to confirm destroy"
+        required: true
+        default: "NO"
+
+jobs:
+  destroy:
+    name: "Terraform Destroy"
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write      # OIDC authentication
+      contents: read       # Checkout repo
+      pull-requests: write
+
+    if: github.event.inputs.confirm_destroy == 'YES'  # Prevent accidental destroy
+
+    steps:
+      # Step 1: Checkout repo
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Configure AWS creds using OIDC
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: eu-central-1
+          role-session-name: GitHubActions-TerraformDestroy
+
+      # Step 3: Setup Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.0
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      # Step 4: Terraform Init (connect to Terraform Cloud)
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infrastructure
+
+      # Step 5: Confirm AWS Identity (optional)
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
+      # Step 6: Terraform Destroy
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: ./infrastructure
+
+      # Step 7: Output cleanup confirmation
+      - name: Done
+        run: echo "Terraform destroy completed successfully!"

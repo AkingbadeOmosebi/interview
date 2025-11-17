@@ -112,12 +112,11 @@ jobs:
         run: terraform fmt -check -recursive
         continue-on-error: true
 
-      # Step 9: Plan changes
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -no-color -out=tfplan
-        continue-on-error: false
+      # Step 9: Terraform Apply changes
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve
+
 
       # Step 10: Comment plan on PR (for review)
       - name: Comment Plan on PR
