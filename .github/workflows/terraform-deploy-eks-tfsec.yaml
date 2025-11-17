@@ -19,14 +19,12 @@ on:
     paths:
       - 'infrastructure/**.tf'
       - 'infrastructure/**.tfvars'
-  workflow_dispatch:  # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
-# Prevents concurrent runs (important for Terraform state)
 concurrency:
   group: terraform-${{ github.ref }}
   cancel-in-progress: false
 
-# Set default working directory for all terraform commands
 defaults:
   run:
     working-directory: ./infrastructure
@@ -35,42 +33,31 @@ jobs:
   terraform:
     name: 'Terraform Security & Deployment'
     runs-on: ubuntu-latest
-    
-    # Required for OIDC authentication
+
     permissions:
-      id-token: write   # Allows GitHub to request AWS credentials
-      contents: read    # Allows reading repo files
-      pull-requests: write  # Allows commenting on PRs
+      id-token: write
+      contents: read
+      pull-requests: write
 
     steps:
-      # Step 1: Checkout repository code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Run TFSec Security Scanner with HTML output
       - name: Run TFSec Security Scanner
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: ./infrastructure
-          soft_fail: true  # Don't fail build on security findings
-          format: lovely  # Beautiful colored console output
-          additional_args: --minimum-severity MEDIUM # I will Set HIGH for productions, Medium for just this project.
+          soft_fail: true
+          format: lovely
+          additional_args: --minimum-severity MEDIUM
 
-      # Step 3: Generate TFSec HTML Report
       - name: Generate TFSec HTML Report
         if: always()
         run: |
-          # Install tfsec
           curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-          
-          # Generate HTML report
           tfsec . --format html --out tfsec-report.html --minimum-severity LOW || true
-          
-          # Show summary
-          echo "TFSec scan complete. Report generated."
-          ls -lh tfsec-report.html
+          echo "TFSec scan complete."
 
-      # Step 4: Upload TFSec HTML Report as Artifact
       - name: Upload TFSec HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,22 +66,17 @@ jobs:
           path: infrastructure/tfsec-report.html
           retention-days: 30
 
-      # Step 5: Generate TFSec Summary for PR Comment
       - name: Generate TFSec Summary
         if: github.event_name == 'pull_request'
         id: tfsec-summary
         run: |
-          # Generate markdown summary
           tfsec . --format markdown --minimum-severity MEDIUM > tfsec-summary.md || true
-          
-          # Read the summary
           if [ -f tfsec-summary.md ]; then
             echo "TFSEC_SUMMARY<<EOF" >> $GITHUB_OUTPUT
             cat tfsec-summary.md >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           fi
 
-      # Step 6: Comment TFSec Results on PR
       - name: Comment TFSec Results on PR
         if: github.event_name == 'pull_request' && steps.tfsec-summary.outputs.TFSEC_SUMMARY != ''
         uses: actions/github-script@v7
@@ -109,7 +91,7 @@ jobs:
             
             </details>
             
-             Full HTML report available in workflow artifacts
+            Full HTML report available in workflow artifacts
             
             *Scanned by: @${{ github.actor }}*`;
             
@@ -120,7 +102,6 @@ jobs:
               body: output
             });
 
-      # Step 7: Configure AWS credentials using OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -128,80 +109,61 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubActions-TerraformDeploy
 
-      # Step 8: Verify AWS connection
       - name: Verify AWS Identity
-        run: |
-          echo "AWS Account ID:"
-          aws sts get-caller-identity
+        run: aws sts get-caller-identity
 
-      # Step 9: Setup Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.0
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # Step 10: Initialize Terraform (connects to TF Cloud)
       - name: Terraform Init
         id: init
         run: terraform init
 
-      # Step 11: Validate configuration
       - name: Terraform Validate
-        id: validate
         run: terraform validate -no-color
 
-      # Step 12: Format check (optional, ensures code style)
       - name: Terraform Format Check
-        id: fmt
         run: terraform fmt -check -recursive
+        
+        # auto fix the formatting issue
+      - name: Terraform Format
+        run: terraform fmt -recursive
         continue-on-error: true
 
-      # Step 13: Plan changes
+
+      # Step: Install and Run Infracost
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v2
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Generate Infracost cost estimate
+        run: |
+          infracost breakdown \
+          --path . \
+          --format json \
+          --out-file infracost.json
+
+      - name: Infracost Diff (PR comment)
+        if: github.event_name == 'pull_request'
+        uses: infracost/actions/comment@v2
+        with:
+          path: infracost.json
+          behavior: update
+
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
 
-
-      # Step 14: Comment plan on PR (for review)
-      - name: Comment Plan on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Plan
-            
-            <details><summary>Show Plan</summary>
-            
-            \`\`\`
-            ${{ steps.plan.outputs.stdout }}
-            \`\`\`
-            
-            </details>
-            
-            *Pushed by: @${{ github.actor }}*`;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            });
-
-      # Step 15: Apply changes (only on main branch)
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
-
-      # Step 16: Output cluster info
       - name: Display Outputs
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          echo " Deployment Complete!"
-          echo ""
+          echo "Deployment Complete!"
           echo "Cluster Name:"
           terraform output cluster_name
-          echo ""
-          echo "To configure kubectl, run:"
+          echo "To configure kubectl:"
           terraform output -raw kubeconfig_cmd
