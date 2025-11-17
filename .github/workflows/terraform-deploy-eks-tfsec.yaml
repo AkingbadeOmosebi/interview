@@ -12,7 +12,7 @@ on:
     paths:
       - 'infrastructure/**.tf'
       - 'infrastructure/**.tfvars'
-      - '.github/workflows/terraform.yml'
+      - '.github/workflows/terraform-deploy-eks-tfsec.yaml'
   pull_request:
     branches:
       - main
