@@ -1,6 +1,7 @@
 # .github/workflows/terraform.yml
 # GitHub Actions workflow to deploy EKS infrastructure using Terraform Cloud
 # Uses OIDC for secure AWS authentication (no hardcoded keys!)
+# Includes TFSec security scanning
 
 name: 'Terraform EKS Deployment'
 
@@ -32,7 +33,7 @@ defaults:
 
 jobs:
   terraform:
-    name: 'Terraform Plan & Apply'
+    name: 'Terraform Security & Deployment'
     runs-on: ubuntu-latest
     
     # Required for OIDC authentication
@@ -40,13 +41,41 @@ jobs:
       id-token: write   # Allows GitHub to request AWS credentials
       contents: read    # Allows reading repo files
       pull-requests: write  # Allows commenting on PRs
+      security-events: write  # Allows uploading SARIF results
 
     steps:
       # Step 1: Checkout repository code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Configure AWS credentials using OIDC
+      # Step 2: TFSec Security Scan
+      - name: Run TFSec Security Scanner
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: ./infrastructure
+          soft_fail: false  # Set to true to not fail the build on findings
+          format: sarif
+          additional_args: --minimum-severity MEDIUM  # Only fail on MEDIUM+ issues
+
+      # Step 2b: Upload TFSec results to GitHub Security tab
+      - name: Upload TFSec SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()  # Always upload even if TFSec fails
+        with:
+          sarif_file: results.sarif
+          category: tfsec
+
+      # Step 2c: Generate TFSec human-readable report
+      - name: TFSec Report Summary
+        uses: aquasecurity/tfsec-action@v1.0.3
+        if: always()
+        with:
+          working_directory: ./infrastructure
+          format: markdown
+          soft_fail: true  # Don't fail, just show results
+        continue-on-error: true
+
+      # Step 3: Configure AWS credentials using OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -54,43 +83,43 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubActions-TerraformDeploy
 
-      # Step 3: Verify AWS connection
+      # Step 4: Verify AWS connection
       - name: Verify AWS Identity
         run: |
           echo "AWS Account ID:"
           aws sts get-caller-identity
 
-      # Step 4: Setup Terraform CLI
+      # Step 5: Setup Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.0
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-      # Step 5: Initialize Terraform (connects to TF Cloud)
+      # Step 6: Initialize Terraform (connects to TF Cloud)
       - name: Terraform Init
         id: init
         run: terraform init
 
-      # Step 6: Validate configuration
+      # Step 7: Validate configuration
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
 
-      # Step 7: Format check (optional, ensures code style)
+      # Step 8: Format check (optional, ensures code style)
       - name: Terraform Format Check
         id: fmt
         run: terraform fmt -check -recursive
         continue-on-error: true
 
-      # Step 8: Plan changes
+      # Step 9: Plan changes
       - name: Terraform Plan
         id: plan
         run: |
           terraform plan -no-color -out=tfplan
         continue-on-error: false
 
-      # Step 9: Comment plan on PR (for review)
+      # Step 10: Comment plan on PR (for review)
       - name: Comment Plan on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -116,16 +145,16 @@ jobs:
               body: output
             });
 
-      # Step 10: Apply changes (only on main branch)
+      # Step 11: Apply changes (only on main branch)
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
 
-      # Step 11: Output cluster info
+      # Step 12: Output cluster info
       - name: Display Outputs
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          echo "Deployment Complete!"
+          echo " Deployment Complete!"
           echo ""
           echo "Cluster Name:"
           terraform output cluster_name
