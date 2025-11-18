@@ -32,6 +32,18 @@
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/pkgs/container/interview-app)
 
 
+# Cloud Side
+
+### Deployment & Destroy Workflows
+![Terraform Deploy EKS](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg)
+![Terraform Destroy](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-destroy.yml/badge.svg)
+
+### Security Scanning
+![TFSec Scan](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg?query=branch=main)
+
+### Cost Estimation
+![Infracost](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg?query=branch=main)
+
 
 # Project Overview
 
