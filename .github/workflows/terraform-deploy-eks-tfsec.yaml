@@ -136,7 +136,7 @@ jobs:
 
       # Step: Install and Run Infracost
       - name: Setup Infracost
-        uses: infracost/actions/setup@v2
+        uses: infracost/infracost-gh-action@v2
         with:
           api-key: ${{ secrets.INFRACOST_API_KEY }}
 
@@ -149,7 +149,7 @@ jobs:
 
       - name: Infracost Diff (PR comment)
         if: github.event_name == 'pull_request'
-        uses: infracost/actions/comment@v2
+        uses: infracost/infracost-gh-action@v2
         with:
           path: infracost.json
           behavior: update
