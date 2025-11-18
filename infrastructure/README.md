@@ -1,6 +1,92 @@
 # Opsfolio – Automated DevSecOps Pipeline for EKS Infrastructure (Extension of My Interview-App Project) or The Cloud Path.
 
-This project is the infrastructure and DevSecOps arm of my **Interview-App** project.
+This project is the Cloud infrastructure and DevSecOps arm of my **Interview-App** project.
+
+```
+                               +------------------------------------------------+
+                               |          CI / DevSecOps (Shared)             |
+                               |------------------------------------------------|
+                               |  - GitLeaks (Secret Scan)                    |
+                               |  - Megalinter (Code Linting)                |
+                               |  - SonarCloud (SAST)                        |
+                               |  - Snyk (SCA & Vulnerabilities)            |
+                               |  - Trivy (Container Scan)                   |
+                               |  - Docker Build & Push to GHCR              |
+                               |  - Semantic Release                          |
+                               +---------------------+--------------------------+
+                                                     |
+                                                     |
+                   +---------------------------------+-----------------------------------+
+                   |                                                                     |
+        +----------+----------+                                               +----------+----------------+
+        |      Local / On-Prem|                                               |         Cloud / AWS EKS   |
+        |  WSL + K3s Prototype|                                               |  Terraform + OIDC + EKS   |
+        |--------------------|                                               |----------------------------|
+        |  Continuous Deploy |                                               |  Infrastructure as Code    |
+        |  via ArgoCD        |                                               |  - Terraform Cloud State   |
+        |  - Watches Repo    |                                               |  - EKS Cluster / Nodegroups|
+        |  - Deploys K3s     |                                               |  - IAM Roles & OIDC RBAC   |
+        |  - Image Updater   |                                               |  - TFsec Security Scan     |
+        |  - Security & Sync |                                               |  - Infracost Cost Checks   |
+        +----------+---------+                                               +----------+-----------------+
+                   |                                                                     |
+     +-------------+-------------+                                         +-------------+--------------------+
+     |                           |                                         |                                  |
++----v----+                +-----v--------------+                           +-----v--------+            +-----v-------------+
+| K3s          |         | SealedSecrets        |                           |   EKS Nodes  |            |    RBAC / OIDC    |
+| Cluster      |         | & Secrets Mgmt       |                           | - Deploy Pods|            | - IAM Role Mapping|
+| - Namespaces |         | - Grafana Admin      |                           | - Services   |            | - GitHub OIDC Role|
+| - Deployments|         | - Alertmanager       |                           +-------------+             +-------------------+
+| - Services   |         | - DB & API Keys      |                           ^
++----+---------+         +------+---------------+                           |
+     |                           |                                          |
+     v                           v                                          |
++----+-----+              +------+-------+                                  |
+| Prometheus|              | Grafana Dash |                                 |
+| - Metrics |              | - Visualizes |                                 |
+|   Collection|            |   Prometheus |                                 |
+| - Node/Pod  |            |   & App Dash |                                 |
+|   Metrics   |            +-------------+                                  |
++------------+                |                                             |
+                              v                                             |
+                      +-------+--------+                                    |
+                      | Alertmanager   |                                    |
+                      | - Config Alerts|                                    |
+                      | - Email/Webhook|                                    |
+                      +----------------+                                    |
+                              |                                             |
+                              v                                             |
+                       +------+-------+                                     |
+                       | Ngrok / Tunnel|                                    |
+                       | - Expose Local|                                    |
+                       | - Traffic Logging|                                 |
+                       | - Optional Geo IP|                                 |
+                       |   Restrictions   |                                 |
+                       +-----------------+                                  |
+                              |                                             |
+                              v                                             |
+                        +-----+-----+                                       |
+                        | Public Access|                                    |
+                        | - Interview App|                                  |
+                        | - QA / Client  |                                  |
+                        | - Secure Tunnel|                                  |
+                        +---------------+                                   |
+                                                                 +-----------+------------+
+                                                                 | Cloud Possibilities    |
+                                                                 | - GitOps via ArgoCD    |
+                                                                 | - Observability & Alert|
+                                                                 |   replication (Prom/Grafana)|
+                                                                 | - Sealed Secrets / KMS |
+                                                                 | - CI/CD replication    |
+                                                                 | - Terraform Cloud      |
+                                                                 |   - State Management   |
+                                                                 |   - Outputs / Destroy  |
+                                                                 | - TFsec Security Scan  |
+                                                                 | - Infracost & AutoFix  |
+                                                                 +------------------------+
+```
+
+
 I built this to show what a real production-ready cloud platform looks like when automated end-to-end using modern DevOps, GitOps, and FinOps tooling.
 
 The stack includes:
