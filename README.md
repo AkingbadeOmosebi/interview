@@ -42,7 +42,7 @@
 ![TFSec Scan](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg?query=branch=main)
 
 ### Cost Estimation
-![Infracost](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg?query=branch=main)
+![Infracost](https://img.shields.io/badge/Infracost-checked-green?logo=infracost)
 
 
 # Project Overview
