@@ -173,6 +173,29 @@
 * deleted duplicate ([d27ed53](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/d27ed533d2fccd7deb83a8955fa1aeb404e507af))
 * fixed terraform config files ([136cbab](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/136cbabc5d418b0cf67790384f5c89dae0407d92))
 * timer issue with data source ([08bcc12](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/08bcc12e107f769d9f9e7edb34b9ed80cb9c98f4))
+* trying v1 to remediate error in InfraCost ([044ed6a](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/044ed6a529d140bf0929a5b67178d2b3f91a07fb))
+* updated workflow ([e1331dd](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/e1331ddf40af5bb957885db3fc05ae35c48d8583))
+
+
+### Features
+
+* Added IaC config ([750b977](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/750b9776c3a4db7f776750bee34704c396c65353))
+* infracost added ([546a12b](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/546a12b999d664a05bc7308f8dcd4bd33353bc6a))
+
+# [2.1.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v2.0.0...v2.1.0) (2025-11-18)
+
+
+### Bug Fixes
+
+* added tf-sec for terraform scanning ([230f6f2](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/230f6f2858ab6735b8c765416bc5a9384bb1d369))
+* bug and added manual destroy killswitch ([7ba4749](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/7ba4749d3f7a91f643f839139c79545ec8fa14a2))
+* bug fix ([5da1637](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/5da1637be30bd1e714901cd4a72dd2ed8911594a))
+* bug fix ([99f1fb7](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/99f1fb7a4bc0e7c8d61c617b508b7aa44569499b))
+* bug fix ([b928888](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/b928888e482318a889c05a929f5d3cf895204ea3))
+* ci switched back to misconfigured v2 ([96d657c](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/96d657cf9f6b16befbc7dfe4bd62b35c7be37ac0))
+* deleted duplicate ([d27ed53](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/d27ed533d2fccd7deb83a8955fa1aeb404e507af))
+* fixed terraform config files ([136cbab](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/136cbabc5d418b0cf67790384f5c89dae0407d92))
+* timer issue with data source ([08bcc12](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/08bcc12e107f769d9f9e7edb34b9ed80cb9c98f4))
 * updated workflow ([e1331dd](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/e1331ddf40af5bb957885db3fc05ae35c48d8583))
 
 
