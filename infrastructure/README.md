@@ -4,50 +4,50 @@ This project is the Cloud infrastructure and DevSecOps arm of my **Interview-App
 
 ```
                                +------------------------------------------------+
-                               |          CI / DevSecOps (Shared)             |
+                               |  CI / DevSecOps (Shared by Local and Cloud)    |
                                |------------------------------------------------|
-                               |  - GitLeaks (Secret Scan)                    |
-                               |  - Megalinter (Code Linting)                |
-                               |  - SonarCloud (SAST)                        |
-                               |  - Snyk (SCA & Vulnerabilities)            |
-                               |  - Trivy (Container Scan)                   |
-                               |  - Docker Build & Push to GHCR              |
-                               |  - Semantic Release                          |
+                               |  - GitLeaks (Secret Scan)                      |
+                               |  - Megalinter (Code Linting)                   |
+                               |  - SonarCloud (SAST)                           |
+                               |  - Snyk (SCA & Vulnerabilities)                |
+                               |  - Trivy (Container Scan)                      |
+                               |  - Docker Build & Push to GHCR                 |
+                               |  - Semantic Release                            |
                                +---------------------+--------------------------+
                                                      |
                                                      |
                    +---------------------------------+-----------------------------------+
                    |                                                                     |
-        +----------+----------+                                               +----------+----------------+
-        |      Local / On-Prem|                                               |         Cloud / AWS EKS   |
-        |  WSL + K3s Prototype|                                               |  Terraform + OIDC + EKS   |
-        |--------------------|                                               |----------------------------|
-        |  Continuous Deploy |                                               |  Infrastructure as Code    |
-        |  via ArgoCD        |                                               |  - Terraform Cloud State   |
-        |  - Watches Repo    |                                               |  - EKS Cluster / Nodegroups|
-        |  - Deploys K3s     |                                               |  - IAM Roles & OIDC RBAC   |
-        |  - Image Updater   |                                               |  - TFsec Security Scan     |
-        |  - Security & Sync |                                               |  - Infracost Cost Checks   |
-        +----------+---------+                                               +----------+-----------------+
+        +----------+----------+                                              +----------+-----------------+
+        |      Local / On-Prem|                                              |         Cloud / AWS EKS    |
+        |  WSL + K3s Prototype|                                              |  Terraform + OIDC + EKS    |
+        |---------------------|                                              |----------------------------|
+        |  Continuous Deploy  |                                              |  Infrastructure as Code    |
+        |  via ArgoCD         |                                              |  - Terraform Cloud State   |
+        |  - Watches Repo     |                                              |  - EKS Cluster / Nodegroups|
+        |  - Deploys K3s      |                                              |  - IAM Roles & OIDC RBAC   |
+        |  - Image Updater    |                                              |  - TFsec Security Scan     |
+        |  - Security & Sync  |                                              |  - Infracost Cost Checks   |
+        +----------+----------+                                              +----------+-----------------+
                    |                                                                     |
      +-------------+-------------+                                         +-------------+--------------------+
      |                           |                                         |                                  |
-+----v----+                +-----v--------------+                           +-----v--------+            +-----v-------------+
-| K3s          |         | SealedSecrets        |                           |   EKS Nodes  |            |    RBAC / OIDC    |
-| Cluster      |         | & Secrets Mgmt       |                           | - Deploy Pods|            | - IAM Role Mapping|
-| - Namespaces |         | - Grafana Admin      |                           | - Services   |            | - GitHub OIDC Role|
-| - Deployments|         | - Alertmanager       |                           +-------------+             +-------------------+
++----v---------+         +-----v----------------+                        +-----v--------+            +-----v-------------+
+| K3s          |         | SealedSecrets        |                        |   EKS Nodes  |            |    RBAC / OIDC    |
+| Cluster      |         | & Secrets Mgmt       |                        | - Deploy Pods|            | - IAM Role Mapping|
+| - Namespaces |         | - Grafana Admin      |                        | - Services   |            | - GitHub OIDC Role|
+| - Deployments|         | - Alertmanager       |                        +--------------+            +-------------------+
 | - Services   |         | - DB & API Keys      |                           ^
 +----+---------+         +------+---------------+                           |
      |                           |                                          |
      v                           v                                          |
-+----+-----+              +------+-------+                                  |
-| Prometheus|              | Grafana Dash |                                 |
-| - Metrics |              | - Visualizes |                                 |
-|   Collection|            |   Prometheus |                                 |
-| - Node/Pod  |            |   & App Dash |                                 |
-|   Metrics   |            +-------------+                                  |
-+------------+                |                                             |
++----+--------+           +------+-------+                                  |
+| Prometheus  |           | Grafana Dash |                                  |
+| - Metrics   |           | - Visualizes |                                  |
+|   Collection|           |   Prometheus |                                  |
+| - Node/Pod  |           |   & App Dash |                                  |
+|   Metrics   |           +--------------+                                  |
++-------------+               |                                             |
                               v                                             |
                       +-------+--------+                                    |
                       | Alertmanager   |                                    |
@@ -56,34 +56,34 @@ This project is the Cloud infrastructure and DevSecOps arm of my **Interview-App
                       +----------------+                                    |
                               |                                             |
                               v                                             |
-                       +------+-------+                                     |
-                       | Ngrok / Tunnel|                                    |
-                       | - Expose Local|                                    |
+                       +------+-----------+                                 |
+                       | Ngrok / Tunnel   |                                 |
+                       | - Expose Local   |                                 |
                        | - Traffic Logging|                                 |
                        | - Optional Geo IP|                                 |
                        |   Restrictions   |                                 |
-                       +-----------------+                                  |
+                       +------------------+                                 |
                               |                                             |
                               v                                             |
-                        +-----+-----+                                       |
-                        | Public Access|                                    |
+                        +-----+----------+                                  |
+                        | Public Access  |                                  |
                         | - Interview App|                                  |
                         | - QA / Client  |                                  |
                         | - Secure Tunnel|                                  |
-                        +---------------+                                   |
-                                                                 +-----------+------------+
-                                                                 | Cloud Possibilities    |
-                                                                 | - GitOps via ArgoCD    |
-                                                                 | - Observability & Alert|
-                                                                 |   replication (Prom/Grafana)|
-                                                                 | - Sealed Secrets / KMS |
-                                                                 | - CI/CD replication    |
-                                                                 | - Terraform Cloud      |
-                                                                 |   - State Management   |
-                                                                 |   - Outputs / Destroy  |
-                                                                 | - TFsec Security Scan  |
-                                                                 | - Infracost & AutoFix  |
-                                                                 +------------------------+
+                        +----------------+                                  |
+                                                                 +-----------+-------------------+
+                                                                 | Cloud Possibilities           |
+                                                                 | - GitOps via ArgoCD           |
+                                                                 | - Observability & Alert       |
+                                                                 |   replication (Prom/Grafana)  |
+                                                                 | - Sealed Secrets / KMS        |
+                                                                 | - CI/CD replication           |
+                                                                 | - Terraform Cloud             |
+                                                                 |   - State Management          |
+                                                                 |   - Outputs / Destroy         |
+                                                                 | - TFsec Security Scan         |
+                                                                 | - Infracost & AutoFix         |
+                                                                 +-------------------------------+
 ```
 
 
