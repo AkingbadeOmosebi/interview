@@ -3,7 +3,7 @@
 # GitHub Actions executes terraform plan/apply (not Terraform Cloud)
 # Terraform Cloud is used ONLY for remote state storage
 # Uses OIDC for secure AWS authentication (no hardcoded keys!)
-# Includes TFSec security scanning and Infracost
+# Includes TFSec security scanning and Infracost.
 
 name: 'Terraform EKS Deployment'
 
