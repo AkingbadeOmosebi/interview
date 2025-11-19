@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.0...v3.0.1) (2025-11-19)
+
+
+### Bug Fixes
+
+* dockerfile ([71bc00d](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/71bc00d5a0cdfd405b831dcf05fd49267716e14b))
+
 # [3.0.0](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v2.0.0...v3.0.0) (2025-11-19)
 
 
