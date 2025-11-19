@@ -33,6 +33,6 @@ jobs:
             token: ${{ secrets.GITHUB_TOKEN }}
             repository_owner: ${{ github.repository_owner }}
             repository-name: ${{ github.repository }}
-            package-name: "interview-app"
+            package-name: interview-app
             delete-untagged: false
             keep-at-most: 5
