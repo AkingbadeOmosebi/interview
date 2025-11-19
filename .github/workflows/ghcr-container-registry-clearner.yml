@@ -15,9 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write      # 
-      contents: read       #
-      pull-requests: write
+    packages: write
+    contents: read
 
     if: github.event.inputs.confirm_destroy == 'YES'  # Prevent accidental destroy
 
