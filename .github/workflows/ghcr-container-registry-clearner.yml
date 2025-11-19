@@ -26,7 +26,7 @@ jobs:
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
           owner-type: user
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.HOUSEKEEPING_TOKEN }}
           package-name: interview-app
           delete-untagged: false
           keep-at-most: 5
