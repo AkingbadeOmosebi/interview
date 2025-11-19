@@ -29,10 +29,11 @@ jobs:
       # Step 2: Delete all untagged image version from the given package name 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
-            owner-type: user # or user
-            token: ${{ secrets.GITHUB_TOKEN }}
-            repository_owner: ${{ github.repository_owner }}
-            repository-name: ${{ github.repository }}
-            package-name: interview-app
-            delete-untagged: false
-            keep-at-most: 5
+          owner-type: user
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-owner: ${{ github.repository_owner }}
+          repository-name: ${{ github.event.repository.name }}
+          package-name: interview-app
+          delete-untagged: false
+          keep-at-most: 5
+
