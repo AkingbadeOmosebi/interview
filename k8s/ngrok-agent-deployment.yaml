@@ -15,14 +15,14 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true      # Ensures container runs as non-root user
-        runAsUser: 1000         # Specify a non-root user ID
-        fsGroup: 1000           # Set filesystem group
+        runAsUser: 1000         # Non-root user ID
+        fsGroup: 1000            # Filesystem group for temp files/logs
       containers:
         - name: ngrok-agent
           image: ngrok/ngrok:3
           args:
             - "http"
-            - "interview-app.default.svc.cluster.local:8080"   # Target my app service (updated to 8080 since i changed my service)
+            - "interview-app.default.svc.cluster.local:8080"   # Target my app service (now matches pod port for cleaner architecture)
             - "--authtoken"
             - "$(NGROK_AUTH_TOKEN)"
             - "--log"
@@ -34,12 +34,12 @@ spec:
                   name: ngrok-secret
                   key: authtoken
           ports:
-            - containerPort: 4040   # Ngrok Web UI for external accessing of ngrok
+            - containerPort: 4040   # Ngrok Web UI for external access to ngrok status
           securityContext:
-            allowPrivilegeEscalation: false     # Prevents privilege escalation
+            allowPrivilegeEscalation: false     # Prevent privilege escalation
             capabilities:
               drop:
-                - ALL                           # Drop all capabilities
+                - ALL                           # Drop all capabilities for extra security
           livenessProbe:            # Checks if ngrok agent is alive
             httpGet:
               path: /status         # Ngrok web UI status endpoint
