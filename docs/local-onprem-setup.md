@@ -437,7 +437,7 @@ Displays the Windows Subsystem for Linux (WSL) setup on Windows 11 used for the 
 ## K3s Cluster:
 
 ### 3. All pods Across All Namespaces
-This screenshot shows all pods running in my cluster across all namespaces. You can see both the interview-app pods in the default namespace and the ngrok-agent and ngrok-operator pods in the ngrok-operator namespace. It confirms that all components of the project are deployed successfully
+This screenshot shows all pods running in my cluster across all namespaces. You can see both the interview-app pods in the default namespace and the ngrok-agent and ngrok-operator pods in the ngrok-operator namespace. It confirms that all components of the project are deployed successfully.
 ![All Pods](/screenshots/SHOW_ALL_NAME_SPACE.png)
 
 ### 4. All Services Across All Namespaces

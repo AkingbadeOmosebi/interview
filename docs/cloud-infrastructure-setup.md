@@ -497,7 +497,7 @@ On the local side, I implemented production-grade features such as:
 
   - **Ngrok Tunnel + Ngrok WAF** for secure external exposure, Geo-IP restrictions, access policies, and request monitoring
 
-  - **Kustomize overlays** for environment-specific configuration management
+  - **Kustomize overlays** for environment-specific configuration management.
 
 These local capabilities mirror the same practices that organizations adopt on the cloud side (and can easily be migrated to cloud-native equivalents such as **_Cloudflare WAF, cloud Load Balancers, HTTPS termination, custom domains,_** etc.).
 
