@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.1...v3.0.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* CrashloopBackOff bug ([5d4f35a](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/5d4f35a141bb71a6b03b0ca8a362dc2c118c97cc))
+
 ## [3.0.1](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.0...v3.0.1) (2025-11-19)
 
 
