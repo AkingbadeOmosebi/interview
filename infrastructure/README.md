@@ -2,6 +2,17 @@
 
 This project is the Cloud infrastructure and DevSecOps arm of my **Interview-App** project.
 
+### Deployment & Destroy Workflows
+![Terraform Deploy EKS](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg)
+![Terraform Destroy](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-destroy.yml/badge.svg)
+
+### Security Scanning
+![TFSec Scan](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg?query=branch=main)
+
+### Cost Estimation
+![Infracost](https://img.shields.io/badge/Infracost-checked-green?logo=infracost)
+
+
 ```
                                +------------------------------------------------+
                                |  CI / DevSecOps (Shared by Local and Cloud)    |
