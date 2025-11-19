@@ -14,6 +14,6 @@ spec:
   ports:
     - name: http        # Regular port 80 for http
       protocol: TCP     # Network protocol type
-      port: 80          # The service port 
+      port: 8080          # The service port 
       targetPort: 8080  # It has to match the port in my deployment file
       nodePort: 31080   # Optional: i will manually add a port; or else K8s assigns one for me
