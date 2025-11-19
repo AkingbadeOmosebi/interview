@@ -67,7 +67,7 @@ All key processes are documented in the docs/ directory for a professional, ente
 
 | Topic                      | Description                                                                                  | Link                                                   |
 | -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Local On-Prem Setup        | How I built a full Kubernetes + GitOps + DevSecOps environment locally using WSL + K3s       | [View](/docs/Local-onprem-setup.md)                     |
+| Local On-Prem Setup        | How I built a full Kubernetes + GitOps + DevSecOps environment locally using WSL + K3s       | [View](/docs/local-onprem-setup.md)                    |
 | Cloud Infrastructure Setup | Terraform-driven AWS EKS cluster, OIDC authentication, TFsec, Infracost, and CI/CD           | [View](/docs/cloud-infrastructure-setup.md)             |
 | Secure CI/CD Workflows     | End-to-end CI/CD automation with ArgoCD, GitHub Actions, Image Updater, and GitOps practices | [View](/docs/Secure-Continous-Integration-Workflows.md) |
 
