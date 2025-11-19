@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.2...v3.0.3) (2025-11-19)
+
+
+### Bug Fixes
+
+* updated ngrok tunnel ([8755bbb](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/8755bbbb442877b86780a3e3a9b7818c388d2c31))
+
 ## [3.0.2](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.1...v3.0.2) (2025-11-19)
 
 
