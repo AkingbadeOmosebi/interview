@@ -16,7 +16,12 @@ RUN apk update && apk upgrade --no-cache
 COPY . /usr/share/nginx/html
 
 # Optional: fix ownership to match existing nginx user which is present in nginx
-RUN chown -R 101:101 /usr/share/nginx/html
+RUN chown -R 101:101 /usr/share/nginx/html \
+    && chown -R 101:101 /var/cache/nginx \
+    && chown -R 101:101 /var/log/nginx \
+    && chown -R 101:101 /etc/nginx/conf.d \
+    && touch /var/run/nginx.pid \
+    && chown -R 101:101 /var/run/nginx.pid
 
 # Switch to non-root user for runtime
 USER 101
@@ -31,7 +36,7 @@ LABEL org.opencontainers.image.title="Opsfolio - Interview App" \
 EXPOSE 80
 
 # Added Health check (optional but good practice for container life)
-HEALTHCHECK CMD wget --spider -q http://localhost:80 || exit 1
+HEALTHCHECK CMD wget --spider -q http://localhost:8080 || exit 1
 
 # Start Nginx in the foreground (required for Docker)
 CMD ["nginx", "-g", "daemon off;"]
