@@ -1,3 +1,11 @@
+## [3.0.4](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.3...v3.0.4) (2025-11-20)
+
+
+### Bug Fixes
+
+* convert CRLF to LF line endings for workflows ([9ff4bd9](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/9ff4bd9e476df3a3ddade061fd2736ed38508c65))
+* refactor ([b7ef9ff](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/b7ef9ff1b36fda48a95c9127e47228f03c2ecb61))
+
 ## [3.0.3](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.2...v3.0.3) (2025-11-19)
 
 
