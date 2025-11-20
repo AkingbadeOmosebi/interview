@@ -4,9 +4,6 @@ on:
   # Allow manual trigger
   workflow_dispatch:
   
-  # Allow being called by other workflows
-  workflow_call:
-  
   # Trigger after Snyk completes
   workflow_run:
     workflows: ["Snyk Dependency Scan"]
@@ -22,10 +19,9 @@ permissions:
 
 jobs:
   build_scan_release_push:
-    # Only run if triggered manually, by workflow_call, or if workflow_run succeeded
+    # Only run if triggered manually or if workflow_run succeeded
     if: |
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'workflow_call' ||
       github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     env:
@@ -155,7 +151,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.check_changes.outputs.changed }}" == "false" ]; then
-            echo "✋ No changes in ./app - skipped Docker build and scan." >> $GITHUB_STEP_SUMMARY
+            echo " No changes in ./app - skipped Docker build and scan." >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.semantic.outputs.released }}" == "true" ]; then
             echo " Semantic Release created version: **${{ steps.semantic.outputs.version }}**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
