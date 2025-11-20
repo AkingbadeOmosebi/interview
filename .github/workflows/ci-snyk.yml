@@ -39,8 +39,7 @@ jobs:
         with:
           command: test
           args: --org=${{ secrets.SNYK_ORG_ID }} --severity-threshold=critical
-        continue-on-error: true
-        
+               
 
       # Upload the scan results to Snyk platform
       - name: Monitor project snapshot on Snyk dashboard
@@ -61,8 +60,7 @@ jobs:
         with:
           command: code test
           args: --org=${{ secrets.SNYK_ORG_ID }} --severity-threshold=high
-          continue-on-error: true
-
+        
       # CRITICAL: Always exit with success
       - name: Ensure workflow success
         if: always()
