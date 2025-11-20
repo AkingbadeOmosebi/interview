@@ -1,14 +1,15 @@
+# Operation Sanity Debug!!!
+# NOTE TO MY SELF: (I'm Entering Forensic Mode to Get to the root cause of this specific pipeline misbehaving is.)
+
 name: ci-docker-build and push-trivy-semantic-release
 
 on:
-  # Allow manual trigger
   workflow_dispatch:
   
-  # Trigger after Snyk completes
   workflow_run:
     workflows: ["Snyk-SCA"]
     types: [completed]
-    branches: [main]
+    # Temporarily removed branches: [main]
 
 permissions:
   contents: write
@@ -20,14 +21,17 @@ permissions:
 jobs:
   debug:
     runs-on: ubuntu-latest
+    # REMOVED the if condition here 
     steps:
       - name: Dump workflow_run context
         run: |
+          echo "🔥 DOCKER WORKFLOW WAS TRIGGERED! 🔥"
           echo "Event name: ${{ github.event_name }}"
           echo "Workflow run conclusion: ${{ github.event.workflow_run.conclusion }}"
           echo "Workflow run name: ${{ github.event.workflow_run.name }}"
           echo "Workflow run status: ${{ github.event.workflow_run.status }}"
           echo "Workflow run event: ${{ github.event.workflow_run.event }}"
+          echo "Head branch: ${{ github.event.workflow_run.head_branch }}"
           echo "Full context:"
           echo '${{ toJSON(github.event.workflow_run) }}'
 
@@ -39,7 +43,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: interview-app
-
     steps:
       # 1️⃣ Checkout repository
       - name: Checkout repository
