@@ -18,8 +18,21 @@ permissions:
   id-token: write
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump workflow_run context
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Workflow run conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow run name: ${{ github.event.workflow_run.name }}"
+          echo "Workflow run status: ${{ github.event.workflow_run.status }}"
+          echo "Workflow run event: ${{ github.event.workflow_run.event }}"
+          echo "Full context:"
+          echo '${{ toJSON(github.event.workflow_run) }}'
+
   build_scan_release_push:
-    # Only run if triggered manually or if workflow_run succeeded
+    needs: debug  
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'

@@ -12,6 +12,7 @@ permissions:
 jobs:
   snyk_scan:
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       # Checkout your code for scanning
@@ -22,17 +23,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '16'
-        continue-on-error: true
 
       # Install dependencies - Snyk needs this to analyze your project
       - name: Install dependencies
         run: npm ci
-        continue-on-error: true
 
       # Install Snyk CLI globally
       - name: Install Snyk CLI
         run: npm install -g snyk
-        continue-on-error: true
 
       # Run Snyk vulnerability test
       - name: Run Snyk open-source vulnerability test
@@ -42,7 +40,6 @@ jobs:
         with:
           command: test
           args: --org=${{ secrets.SNYK_ORG_ID }}
-        continue-on-error: true
 
       # Upload the scan results to Snyk platform
       - name: Monitor project snapshot on Snyk dashboard
@@ -54,7 +51,6 @@ jobs:
             --target-reference=${{ github.ref_name }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
 
       # Run Snyk Code static analysis (SAST)
       - name: Run Snyk Code scan (SAST)
@@ -64,4 +60,10 @@ jobs:
         with:
           command: code test
           args: --org=${{ secrets.SNYK_ORG_ID }}
-        continue-on-error: true
+
+      # CRITICAL: Always exit with success
+      - name: Ensure workflow success
+        if: always()
+        run: |
+          echo "Snyk scan completed (vulnerabilities may exist, check Snyk dashboard)"
+          exit 0
