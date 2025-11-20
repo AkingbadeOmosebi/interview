@@ -1,7 +1,7 @@
 # Operation Sanity Debug!!!
 # NOTE TO MY SELF: (I'm Entering Forensic Mode to Get to the root cause of this specific pipeline misbehaving is.)
 
-name: ci-docker-build and push-trivy-semantic-release
+name: ci-docker-build-and-push-trivy-semantic-release
 
 on:
   workflow_dispatch:

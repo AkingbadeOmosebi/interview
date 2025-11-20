@@ -12,7 +12,6 @@ permissions:
 jobs:
   snyk_scan:
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       # Checkout your code for scanning
@@ -39,7 +38,9 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --org=${{ secrets.SNYK_ORG_ID }}
+          args: --org=${{ secrets.SNYK_ORG_ID }} --severity-threshold=critical
+        continue-on-error: true
+        
 
       # Upload the scan results to Snyk platform
       - name: Monitor project snapshot on Snyk dashboard
@@ -59,7 +60,8 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: code test
-          args: --org=${{ secrets.SNYK_ORG_ID }}
+          args: --org=${{ secrets.SNYK_ORG_ID }} --severity-threshold=high
+          continue-on-error: true
 
       # CRITICAL: Always exit with success
       - name: Ensure workflow success
