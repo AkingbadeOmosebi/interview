@@ -94,7 +94,7 @@ jobs:
           
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload MegaLinter artifacts
+      # Upload MegaLinter artifacts!
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         if: steps.check_changes.outputs.changes_detected == 'true' && (success() || failure())

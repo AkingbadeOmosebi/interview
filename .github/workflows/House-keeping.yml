@@ -1,6 +1,5 @@
 name: "House-keeping"
 
-# Only manual triggers (workflow_dispatch)
 on:
   workflow_dispatch:
     inputs:
@@ -15,23 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: write      # 
-      contents: read       #
-      pull-requests: write
+      packages: write
+      contents: read
 
-    if: github.event.inputs.confirm_destroy == 'YES'  # Prevent accidental destroy
+    if: github.event.inputs.confirm_destroy == 'YES'
 
     steps:
-      # Step 1: Checkout repo
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Delete all untagged image version from the given package name 
       - uses: quartx-analytics/ghcr-cleaner@v1
         with:
-            owner-type: org # or user
-            token: ${{ secrets.PAT_TOKEN }}
-            repository_owner: ${{ github.repository_owner }}
-            repository-name: ${{ github.repository }}
-            delete-untagged: false
-            keep-at-most: 5
+          owner-type: user
+          token: ${{ secrets.HOUSEKEEPING_TOKEN }}
+          package-name: interview-app
+          delete-untagged: false
+          keep-at-most: 5
