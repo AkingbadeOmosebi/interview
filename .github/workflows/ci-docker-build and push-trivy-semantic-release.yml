@@ -1,4 +1,4 @@
-name: CI - Docker-Build, Trivy-Scan, Semantic-Release & Docker-Push
+name: ci-docker-build and push-trivy-semantic-release
 
 on:
   # Allow manual trigger
@@ -6,7 +6,7 @@ on:
   
   # Trigger after Snyk completes
   workflow_run:
-    workflows: ["Snyk Dependency Scan"]
+    workflows: ["Snyk-SCA"]
     types: [completed]
     branches: [main]
 

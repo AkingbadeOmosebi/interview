@@ -1,4 +1,4 @@
-name: Snyk Dependency Scan
+name: Snyk-SCA
 
 on:
   workflow_run:
@@ -65,10 +65,3 @@ jobs:
           command: code test
           args: --org=${{ secrets.SNYK_ORG_ID }}
         continue-on-error: true
-
-      # CRITICAL: Always exit with success
-      - name: Ensure workflow success
-        if: always()
-        run: |
-          echo "Snyk scan completed (vulnerabilities may exist, check Snyk dashboard)"
-          exit 0
