@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.4...v3.0.5) (2025-11-20)
+
+
+### Bug Fixes
+
+* house-keeping ([46ec55d](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/commit/46ec55dc7338dcbf4b83f81792c827844c3a7e36))
+
 ## [3.0.4](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/compare/v3.0.3...v3.0.4) (2025-11-20)
 
 
