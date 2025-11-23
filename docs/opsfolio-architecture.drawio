@@ -1,0 +1,311 @@
+<mxfile host="app.diagrams.net" modified="2025-11-23T00:00:00.000Z" agent="Claude" version="22.0.0" type="device">
+  <diagram name="Opsfolio DevSecOps Architecture" id="opsfolio-arch">
+    <mxGraphModel dx="2400" dy="1800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="2400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="Opsfolio DevSecOps Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=32;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="800" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- LEGEND -->
+        <mxCell id="legend-container" value="Legend" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="240" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-security" value="🔴 Security Layer" style="text;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="30" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-cicd" value="🔵 CI/CD Pipeline" style="text;strokeColor=#6c8ebf;fillColor=#dae8fc;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="54" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-gitops" value="🟢 GitOps &amp; Deployment" style="text;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="78" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-iac" value="🟠 Infrastructure as Code" style="text;strokeColor=#d6b656;fillColor=#fff2cc;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="102" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-observability" value="🟣 Observability" style="text;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="126" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-secrets" value="🟡 Secrets Management" style="text;strokeColor=#d6b656;fillColor=#ffe6cc;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="legend-container">
+          <mxGeometry y="150" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-runtime" value="⚫ Application Runtime" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontColor=#333333;" vertex="1" parent="legend-container">
+          <mxGeometry y="174" width="240" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- GITHUB REPOSITORY (SOURCE) -->
+        <mxCell id="github-repo" value="GitHub Repository&#xa;(Single Source of Truth)&#xa;&#xa;• /app (Node.js)&#xa;• /k8s (Manifests)&#xa;• /infrastructure (Terraform)&#xa;• /.github/workflows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="550" y="320" width="300" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- SHIFT-LEFT SECURITY PIPELINE -->
+        <mxCell id="security-pipeline-container" value="🔴 Shift-Left Security CI Pipeline" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=0;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="500" width="800" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-gitleaks" value="GitLeaks&#xa;Secret Scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="50" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-megalinter" value="MegaLinter&#xa;Quality Checks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="200" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-sonarcloud" value="SonarCloud&#xa;SAST Analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="350" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-snyk" value="Snyk&#xa;SCA &amp; Vuln" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="500" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tool-codeql" value="Code Linting&#xa;+ Spell Check" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;fontSize=11;" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="650" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="security-status" value="Status Checks: CRITICAL / HIGH / MEDIUM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2" vertex="1" parent="security-pipeline-container">
+          <mxGeometry x="50" y="130" width="730" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- BUILD & RELEASE PIPELINE -->
+        <mxCell id="build-pipeline-container" value="🔵 Build, Scan &amp; Release Pipeline" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=0;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="720" width="800" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-docker" value="1. Docker Build&#xa;Multi-stage Dockerfile" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="build-pipeline-container">
+          <mxGeometry x="50" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-trivy" value="2. Trivy Scan&#xa;Container Vuln Scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="build-pipeline-container">
+          <mxGeometry x="230" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-push" value="3. Push to GHCR&#xa;ghcr.io/.../app:vX.Y.Z" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="build-pipeline-container">
+          <mxGeometry x="410" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-release" value="4. Semantic Release&#xa;Version + Changelog" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="build-pipeline-container">
+          <mxGeometry x="590" y="50" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-info" value="✅ Automated on merge to main branch" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2" vertex="1" parent="build-pipeline-container">
+          <mxGeometry x="50" y="130" width="700" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- GITHUB CONTAINER REGISTRY -->
+        <mxCell id="ghcr-container" value="📦 GitHub Container Registry (GHCR)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="450" y="960" width="500" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ghcr-repo" value="Repository: ghcr.io/akingbadeomosebi/interview-app" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=1" vertex="1" parent="ghcr-container">
+          <mxGeometry y="30" width="500" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ghcr-latest" value="• v3.0.5 (latest) ✅" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=20;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="ghcr-container">
+          <mxGeometry y="54" width="500" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ghcr-prev" value="• v3.0.4, v3.0.3, ..." style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=20;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="ghcr-container">
+          <mxGeometry y="78" width="500" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ghcr-note" value="ArgoCD Image Updater watches this registry" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontStyle=2;fontSize=10;" vertex="1" parent="ghcr-container">
+          <mxGeometry y="102" width="500" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- LOCAL ENVIRONMENT SECTION -->
+        <mxCell id="local-env-title" value="LOCAL / ON-PREM ENVIRONMENT (WSL + K3s)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1150" width="640" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ArgoCD -->
+        <mxCell id="argocd-local" value="🟢 ArgoCD + Image Updater" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1210" width="600" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="argocd-watches" value="• Watches: github.com/AkingbadeOmosebi/Opsfolio-Interview-App/k8s" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="argocd-local">
+          <mxGeometry y="30" width="600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="argocd-updater" value="• Image Updater: Polls GHCR, updates deployment.yaml on new tags" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="argocd-local">
+          <mxGeometry y="54" width="600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="argocd-sync" value="• Sync Strategy: Auto-sync, Self-heal, Prune enabled" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="argocd-local">
+          <mxGeometry y="78" width="600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="argocd-deploys" value="• Deploys to: K3s cluster namespaces (default, monitoring, argocd)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="argocd-local">
+          <mxGeometry y="102" width="600" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- K3s Cluster -->
+        <mxCell id="k3s-cluster" value="⚫ K3s Kubernetes Cluster" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1390" width="600" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k3s-ns-default" value="Namespace: default" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#ffffff;strokeColor=#666666;fontSize=11;" vertex="1" parent="k3s-cluster">
+          <mxGeometry y="30" width="600" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-deployment" value="• Deployment: interview-app (replicas: 2, image: ghcr.io/.../app:v3.0.5)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-default">
+          <mxGeometry y="20" width="600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-service" value="• Service: interview-app-service (ClusterIP, 80→3000)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-default">
+          <mxGeometry y="44" width="600" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k3s-ns-monitoring" value="Namespace: monitoring" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="k3s-cluster">
+          <mxGeometry y="110" width="600" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-prometheus" value="• 🟣 Prometheus: Scrapes metrics (nodes, pods, /metrics endpoints)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-monitoring">
+          <mxGeometry y="20" width="600" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-grafana" value="• 🟣 Grafana: Visualizes Prometheus data with dashboards" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-monitoring">
+          <mxGeometry y="42" width="600" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-alertmanager" value="• 🟣 Alertmanager: Routes alerts (email, Slack, webhooks)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-monitoring">
+          <mxGeometry y="64" width="600" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="k3s-ns-secrets" value="Namespace: kube-system" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=20;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="k3s-cluster">
+          <mxGeometry y="200" width="600" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-sealedsecrets" value="• 🟡 Sealed Secrets Controller: Decrypts SealedSecrets → K8s Secrets" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="k3s-ns-secrets">
+          <mxGeometry y="20" width="600" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="k3s-secrets-list" value="  Secrets: grafana-admin, alertmanager-config, ngrok-authtoken, db-creds" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2" vertex="1" parent="k3s-ns-secrets">
+          <mxGeometry y="42" width="600" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Ngrok -->
+        <mxCell id="ngrok-local" value="🌐 Ngrok Tunnel" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1690" width="600" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ngrok-connects" value="• Connects to: interview-app-service.default:80" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="ngrok-local">
+          <mxGeometry y="30" width="600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="ngrok-url" value="• Public URL: https://unstoical-carmelina-diphyodont.ngrok-free.dev" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="ngrok-local">
+          <mxGeometry y="54" width="600" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- CLOUD ENVIRONMENT SECTION -->
+        <mxCell id="cloud-env-title" value="CLOUD / AWS EKS ENVIRONMENT (Production-Ready)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1150" width="840" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Terraform Pipeline -->
+        <mxCell id="terraform-pipeline" value="🟠 Terraform Cloud + IaC Pipeline" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1210" width="800" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="tf-tfsec" value="1. TFsec Security Scan → Checks IaC for misconfigurations" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="terraform-pipeline">
+          <mxGeometry y="30" width="800" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tf-infracost" value="2. Infracost → Estimates costs, posts to PR, blocks on threshold" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="terraform-pipeline">
+          <mxGeometry y="54" width="800" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tf-apply" value="3. Terraform Apply → Via GitHub OIDC (keyless auth), remote state in TF Cloud" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="terraform-pipeline">
+          <mxGeometry y="78" width="800" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tf-creates" value="Creates: VPC, EKS Cluster, Node Groups, IAM Roles, NAT Gateway" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2" vertex="1" parent="terraform-pipeline">
+          <mxGeometry y="102" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- AWS Infrastructure -->
+        <mxCell id="aws-infra" value="☁️ AWS Infrastructure" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1370" width="800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-vpc" value="VPC: 10.0.0.0/16 (Public subnets x2, Private subnets x2, NAT Gateway)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="30" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-iam" value="IAM: GitHub OIDC Provider, EKS Cluster Role, Node Group Role, Terraform Role" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="54" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-eks-cluster" value="EKS Cluster: opsfolio-eks (v1.28+, Secrets encrypted with KMS, CloudWatch logs)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=1" vertex="1" parent="aws-infra">
+          <mxGeometry y="78" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-nodegroup" value="  └─ Node Group: t3.medium, min:2 max:4, auto-scaling enabled" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="102" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-workloads-title" value="EKS Workloads:" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=3" vertex="1" parent="aws-infra">
+          <mxGeometry y="126" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-app-deploy" value="  • Deployment: interview-app (replicas:3, resources: 256Mi/0.25cpu → 512Mi/0.5cpu)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="150" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-svc" value="  • Service: LoadBalancer (creates AWS ALB)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="174" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-monitoring" value="  • Monitoring: Prometheus, Grafana, Alertmanager (+ CloudWatch integration)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-infra">
+          <mxGeometry y="198" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ALB -->
+        <mxCell id="aws-alb" value="AWS Application Load Balancer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1630" width="800" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="alb-dns" value="DNS: opsfolio-&lt;random&gt;.us-east-1.elb.amazonaws.com" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-alb">
+          <mxGeometry y="30" width="800" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="alb-note" value="Can add: Route53 custom domain + ACM SSL for HTTPS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2" vertex="1" parent="aws-alb">
+          <mxGeometry y="54" width="800" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- CONNECTIONS/ARROWS -->
+        <mxCell id="edge-github-security" edge="1" parent="1" source="github-repo" target="security-pipeline-container">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="edge-security-build" edge="1" parent="1" source="security-pipeline-container" target="build-pipeline-container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-build-ghcr" edge="1" parent="1" source="build-pipeline-container" target="ghcr-container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-ghcr-local" edge="1" parent="1" source="ghcr-container" target="argocd-local">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-argocd-k3s" edge="1" parent="1" source="argocd-local" target="k3s-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-k3s-ngrok" edge="1" parent="1" source="k3s-cluster" target="ngrok-local">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-ghcr-cloud" edge="1" parent="1" source="ghcr-container" target="terraform-pipeline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-tf-aws" edge="1" parent="1" source="terraform-pipeline" target="aws-infra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-aws-alb" edge="1" parent="1" source="aws-infra" target="aws-alb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- NOTES -->
+        <mxCell id="note-flow" value="Data Flow:&#xa;Code Push → Security Scans → Build &amp; Release → GHCR →&#xa;ArgoCD detects new image → Deploys to K3s/EKS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="320" width="340" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note-principles" value="Key Principles:&#xa;• Security-First (Shift-Left)&#xa;• GitOps (Git as Source of Truth)&#xa;• Zero-Trust (OIDC, no long-lived creds)&#xa;• Observability by Default&#xa;• Cost-Aware (FinOps with Infracost)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="420" width="340" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="footer" value="Generated for Opsfolio DevSecOps Portfolio Project | https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="400" y="1820" width="800" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

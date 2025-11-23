@@ -67,6 +67,10 @@ All key processes are documented in the docs/ directory for a professional, ente
 
 | Topic                      | Description                                                                                  | Link                                                   |
 | -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Architecture Overview**  | **Complete visual and detailed architecture documentation with all components**             | **[View](/docs/opsfolio-architecture.drawio)** 📊       |
+| Architecture Diagram (ASCII)| Text-based complete architecture diagram with data flows and component details              | [View](/docs/architecture-diagram-detailed.md)         |
+| Architecture Components    | Deep-dive technical guide covering all 12 major components with configs and best practices  | [View](/docs/architecture-components-guide.md)         |
+| How to Use Architecture Docs| Guide on how to use the architecture documentation for interviews and presentations        | [View](/docs/HOW-TO-USE-ARCHITECTURE-DOCS.md)         |
 | Local On-Prem Setup        | How I built a full Kubernetes + GitOps + DevSecOps environment locally using WSL + K3s       | [View](/docs/local-onprem-setup.md)                    |
 | Cloud Infrastructure Setup | Terraform-driven AWS EKS cluster, OIDC authentication, TFsec, Infracost, and CI/CD           | [View](/docs/cloud-infrastructure-setup.md)             |
 | Secure CI/CD Workflows     | End-to-end CI/CD automation with ArgoCD, GitHub Actions, Image Updater, and GitOps practices | [View](/docs/Secure-Continous-Integration-Workflows.md) |
