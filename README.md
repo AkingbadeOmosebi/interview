@@ -70,7 +70,7 @@ All key processes are documented in the docs/ directory for a professional, ente
 
 | Topic                      | Description                                                                                  | Link                                                   |
 | -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **Architecture Overview**  | **Complete visual and detailed architecture documentation with all components**             | **[View](/docs/opsfolio-architecture.drawio)**           |
+| **Architecture Overview**  | **Complete visual and detailed architecture documentation with all components**             | **[View](/docs/opsfolio-architecture.md)**           |
 | Architecture Diagram (ASCII)| Text-based complete architecture diagram with data flows and component details              | [View](/docs/architecture-diagram-detailed.md)         |
 | Architecture Components    | Deep-dive technical guide covering all 12 major components with configs and best practices  | [View](/docs/architecture-components-guide.md)         |
 | Local On-Prem Setup        | How I built a full Kubernetes + GitOps + DevSecOps environment locally using WSL + K3s       | [View](/docs/local-onprem-setup.md)                    |
