@@ -1985,18 +1985,18 @@ resource "aws_instance" "example" {
     │ detects new version  │        │ Terraform workflow   │
     │         ↓            │        │ if infra changed     │
     │ Updates deployment   │        │         ↓            │
-    │ in Git              │        │ - TFsec scan         │
+    │ in Git               │        │ - TFsec scan         │
     │         ↓            │        │ - Infracost estimate │
-    │ ArgoCD syncs        │        │ - Terraform apply    │
+    │ ArgoCD syncs         │        │ - Terraform apply    │
     │         ↓            │        │         ↓            │
-    │ K3s deploys new pods│        │ EKS cluster updated  │
+    │ K3s deploys new pods │        │ EKS cluster updated  │
     │         ↓            │        │         ↓            │
-    │ Prometheus scrapes  │        │ Deploy app to EKS    │
-    │ Grafana shows       │        │         ↓            │
+    │ Prometheus scrapes   │        │ Deploy app to EKS    │
+    │ Grafana shows        │        │         ↓            │
     │         ↓            │        │ ALB routes traffic   │
-    │ Alertmanager ready  │        │         ↓            │
+    │ Alertmanager ready   │        │         ↓            │
     │         ↓            │        │ CloudWatch monitors  │
-    │ Ngrok exposes       │        │                      │
+    │ Ngrok exposes        │        │                      │
     └──────────────────────┘        └──────────────────────┘
 ```
 
