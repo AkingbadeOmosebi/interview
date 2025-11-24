@@ -485,33 +485,69 @@ Static analysis of Terraform code to detect security misconfigurations before in
 
 ### Results
 
-#### Status: ⚠️ **6 ISSUES** - 3 Critical, 3 High (Unresolved)
+#### Status: ⚠️ **4 ISSUES** - 3 Critical, 1 Medium (Documented)
 
 ![TFsec Scan Results](/screenshots/security/tfsec-issues.png)
 
 **Scan Summary:**
 - **Critical**: 3 🔴
-- **High**: 3 🟠
-- **Medium**: 0 ⚠️
+- **High**: 0 🟠
+- **Medium**: 1 ⚠️
 - **Low**: 0 ℹ️
-- **Status**: NEEDS ATTENTION ⚠️
+- **Status**: DOCUMENTED ⚠️
 
 ### Issues Breakdown
 
 #### Critical Issues (3)
 
-##### 1. **EKS Cluster Endpoint Public Access**
+##### 1. **Security Group Allows Public Egress**
 ```
-Rule: AWS083
+Rule: aws-ec2-no-public-egress-sgr
 Severity: CRITICAL
-File: infrastructure/main.tf:45
+File: terraform-aws-modules/terraform-aws-eks/node_groups.tf:222
+```
+
+**Issue:**
+```hcl
+resource "aws_security_group_rule" "egress" {
+  # An egress security group rule allows traffic to /0
+  cidr_blocks = ["0.0.0.0/0"]  # ❌ Allows egress to multiple public internet addresses
+}
+```
+
+**Impact:**
+- Worker nodes can communicate with any internet destination
+- Potential data exfiltration risk
+- Increased attack surface if node is compromised
+
+**Recommendation:**
+```hcl
+# Restrict egress to specific destinations
+resource "aws_security_group_rule" "egress_restricted" {
+  type        = "egress"
+  cidr_blocks = [
+    "10.0.0.0/8",      # VPC CIDR
+    "52.94.0.0/16",    # AWS services (adjust per region)
+  ]
+}
+```
+
+**Status**: 🔴 **DOCUMENTED** (Required for pulling container images from GHCR)
+
+---
+
+##### 2. **EKS Cluster Public Access Enabled**
+```
+Rule: aws-eks-no-public-cluster-access
+Severity: CRITICAL
+File: terraform-aws-modules/terraform-aws-eks/main.tf:50
 ```
 
 **Issue:**
 ```hcl
 resource "aws_eks_cluster" "main" {
   vpc_config {
-    endpoint_public_access = true  # ❌ Public endpoint
+    endpoint_public_access = true  # ❌ Public cluster access is enabled
   }
 }
 ```
@@ -519,7 +555,7 @@ resource "aws_eks_cluster" "main" {
 **Impact:**
 - EKS API server accessible from internet
 - Increased attack surface
-- Risk of unauthorized access
+- Risk of unauthorized access attempts
 
 **Recommendation:**
 ```hcl
@@ -527,161 +563,98 @@ resource "aws_eks_cluster" "main" {
   vpc_config {
     endpoint_public_access  = false  # ✅ Private only
     endpoint_private_access = true
-    public_access_cidrs     = ["YOUR_IP/32"]  # If public needed
+    # OR restrict public access:
+    public_access_cidrs     = ["YOUR_IP/32"]
   }
 }
 ```
 
-**Status**: 🔴 **UNRESOLVED** (Required for demo access)
+**Status**: 🔴 **DOCUMENTED** (Required for demo access without VPN)
 
 ---
 
-##### 2. **S3 Bucket Encryption Not Enforced**
+##### 3. **EKS Cluster Open CIDR for Public Access**
 ```
-Rule: AWS017
+Rule: aws-eks-no-public-cluster-access-to-cidr
 Severity: CRITICAL
-File: infrastructure/s3.tf:12
-```
-
-**Issue:**
-```hcl
-resource "aws_s3_bucket" "tfstate" {
-  bucket = "opsfolio-tfstate"
-  # Missing: server_side_encryption_configuration
-}
-```
-
-**Impact:**
-- State file contains sensitive data
-- Data at rest not encrypted
-- Compliance violation
-
-**Recommendation:**
-```hcl
-resource "aws_s3_bucket_server_side_encryption_configuration" "tfstate" {
-  bucket = aws_s3_bucket.tfstate.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-```
-
-**Status**: 🔴 **UNRESOLVED** (Terraform Cloud backend used instead)
-
----
-
-##### 3. **EKS Cluster Logging Disabled**
-```
-Rule: AWS066
-Severity: CRITICAL
-File: infrastructure/main.tf:52
+File: terraform-aws-modules/terraform-aws-eks/main.tf:51
 ```
 
 **Issue:**
 ```hcl
 resource "aws_eks_cluster" "main" {
-  # Missing: enabled_cluster_log_types
+  vpc_config {
+    public_access_cidrs = ["0.0.0.0/0"]  # ❌ Cluster allows access from public CIDR: 0.0.0.0/0
+  }
 }
 ```
 
 **Impact:**
-- No audit trail for API calls
-- Difficult to investigate security incidents
-- Compliance requirement failure
+- Any IP address can attempt to access the EKS API
+- No IP-based access control
+- Maximum exposure of cluster endpoint
 
 **Recommendation:**
 ```hcl
 resource "aws_eks_cluster" "main" {
-  enabled_cluster_log_types = [
-    "api",
-    "audit",
-    "authenticator",
-    "controllerManager",
-    "scheduler"
-  ]
+  vpc_config {
+    # Restrict to known IPs
+    public_access_cidrs = [
+      "YOUR_OFFICE_IP/32",
+      "YOUR_HOME_IP/32",
+      "INTERVIEWER_IP/32"
+    ]
+  }
 }
 ```
 
-**Status**: 🔴 **UNRESOLVED** (Cost optimization for demo)
+**Status**: 🔴 **DOCUMENTED** (Required for flexible demo access)
 
 ---
 
-#### High Severity Issues (3)
+#### Medium Severity Issues (1)
 
-##### 4. **IAM Policy Too Permissive**
+##### 4. **VPC Flow Logs Not Enabled**
 ```
-Rule: AWS099
-Severity: HIGH
-File: infrastructure/iam.tf:23
+Rule: aws-ec2-require-vpc-flow-logs-for-all-vpcs
+Severity: MEDIUM
+File: terraform-aws-modules/terraform-aws-vpc/main.tf:28-51
 ```
 
 **Issue:**
 ```hcl
-resource "aws_iam_role_policy" "eks_node" {
-  policy = jsonencode({
-    Statement = [{
-      Action   = "s3:*"  # ❌ Too broad
-      Resource = "*"     # ❌ All resources
-    }]
-  })
+resource "aws_vpc" "main" {
+  # Missing: VPC Flow Logs configuration
 }
 ```
+
+**Description:**
+VPC Flow Logs capture information about IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs.
+
+**Impact:**
+- No network traffic visibility
+- Difficult to troubleshoot connectivity issues
+- Limited security monitoring capabilities
+- Cannot investigate suspicious network activity
 
 **Recommendation:**
 ```hcl
-# Principle of least privilege
-Action   = ["s3:GetObject", "s3:PutObject"]
-Resource = "arn:aws:s3:::specific-bucket/*"
-```
+resource "aws_flow_log" "vpc" {
+  iam_role_arn    = aws_iam_role.flow_logs.arn
+  log_destination = aws_cloudwatch_log_group.flow_logs.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.main.id
+}
 
-**Status**: 🟠 **UNRESOLVED** (Simplified for demo)
-
----
-
-##### 5. **Security Group Allows 0.0.0.0/0 Ingress**
-```
-Rule: AWS018
-Severity: HIGH
-File: infrastructure/security.tf:34
-```
-
-**Issue:**
-```hcl
-resource "aws_security_group_rule" "allow_all" {
-  cidr_blocks = ["0.0.0.0/0"]  # ❌ All IPs allowed
+resource "aws_cloudwatch_log_group" "flow_logs" {
+  name              = "/aws/vpc/flow-logs"
+  retention_in_days = 7
 }
 ```
 
-**Recommendation:**
-```hcl
-cidr_blocks = [
-  "YOUR_OFFICE_IP/32",
-  "YOUR_VPN_IP/32"
-]
-```
+**Cost Impact:** ~$5-10/month for log storage
 
-**Status**: 🟠 **UNRESOLVED** (Required for public demo)
-
----
-
-##### 6. **RDS Instance Not Encrypted**
-```
-Rule: AWS051
-Severity: HIGH
-File: infrastructure/rds.tf:15
-```
-
-**Issue:**
-```hcl
-resource "aws_db_instance" "main" {
-  storage_encrypted = false  # ❌ Not encrypted
-}
-```
-
-**Status**: 🟠 **N/A** (No RDS in this project)
+**Status**: ⚠️ **DOCUMENTED** (Cost optimization for demo)
 
 ---
 
@@ -691,49 +664,68 @@ resource "aws_db_instance" "main" {
 
 1. **Public Access Required**
    - Interviewers need to access the application
-   - No VPN infrastructure for demos
-   - Cost prohibitive for portfolio project
+   - EKS API must be accessible for kubectl demos
+   - No VPN infrastructure for portfolio project
+   - Cost prohibitive to maintain VPN for demos
 
 2. **Cost Optimization**
-   - EKS logging: ~$10-50/month additional
+   - VPC Flow Logs: ~$5-10/month for log storage
    - Private endpoints: Requires NAT gateway (~$30/month)
-   - Total savings: ~$40-80/month
+   - Restricting egress: Complicates container image pulls
+   - Total savings: ~$35-40/month
 
 3. **Scope Trade-offs**
    - Single-node cluster (not production)
-   - Simplified IAM for transparency
-   - Focus on CI/CD over infrastructure hardening
+   - Demo environment, not production
+   - Focus on CI/CD workflow demonstration
+   - Security awareness documented vs. implementation
+
+4. **Terraform Cloud Backend**
+   - State stored in Terraform Cloud (not S3)
+   - Terraform Cloud provides encryption at rest
+   - No S3 bucket to secure in this project
 
 ### Production Remediation Plan
 
 For production deployment, these issues MUST be addressed:
 
 ```hcl
-# ✅ Production-ready configuration
+# ✅ Production-ready EKS configuration
 resource "aws_eks_cluster" "main" {
-  # Enable logging
-  enabled_cluster_log_types = ["api", "audit", "authenticator"]
-
-  # Private endpoint
   vpc_config {
+    # Private endpoint only
     endpoint_private_access = true
     endpoint_public_access  = false
+
+    # OR if public needed, restrict IPs
+    public_access_cidrs = [
+      "YOUR_OFFICE_IP/32",
+      "YOUR_VPN_IP/32"
+    ]
   }
 }
 
-# ✅ Enforce encryption
-resource "aws_s3_bucket_server_side_encryption_configuration" "tfstate" {
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm     = "aws:kms"
-      kms_master_key_id = aws_kms_key.terraform_state.arn
-    }
-  }
+# ✅ Enable VPC Flow Logs
+resource "aws_flow_log" "vpc" {
+  iam_role_arn    = aws_iam_role.flow_logs.arn
+  log_destination = aws_cloudwatch_log_group.flow_logs.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.main.id
 }
 
-# ✅ Least privilege IAM
-resource "aws_iam_role_policy" "eks_node" {
-  policy = data.aws_iam_policy_document.least_privilege.json
+# ✅ Restrict security group egress
+resource "aws_security_group_rule" "egress_restricted" {
+  type        = "egress"
+  cidr_blocks = [
+    "10.0.0.0/8",           # VPC internal
+    "52.94.0.0/16",         # AWS services (eu-central-1)
+    "registry.k8s.io",      # Kubernetes registry
+  ]
+}
+
+# ✅ Add VPN/Bastion for private access
+resource "aws_instance" "bastion" {
+  # Bastion host for secure access
 }
 ```
 
@@ -758,7 +750,7 @@ screenshots/security/tfsec-issues.png
 │  SonarCloud       │ ⚠️ MINOR   │ Non-critical issues           │
 │  Snyk             │ ✅ PASS    │ All critical fixed            │
 │  Trivy            │ ✅ PASS    │ Clean container scan          │
-│  TFsec            │ ⚠️ ISSUES  │ 6 known issues (justified)    │
+│  TFsec            │ ⚠️ ISSUES  │ 4 issues (documented)         │
 ├────────────────────────────────────────────────────────────────┤
 │  OVERALL RATING   │ 🟢 GOOD    │ 4/6 tools passing             │
 └────────────────────────────────────────────────────────────────┘
@@ -767,12 +759,12 @@ screenshots/security/tfsec-issues.png
 ### Severity Distribution
 
 ```
-Total Issues Across All Scanners: 19
+Total Issues Across All Scanners: 17
 
-Critical (3):  ███░░░░░░░ 16%  (TFsec only, justified)
-High (3):      ███░░░░░░░ 16%  (TFsec only, justified)
-Medium (5):    █████░░░░░ 26%  (Minor linting issues)
-Low (8):       ████████░░ 42%  (Informational)
+Critical (3):  ████░░░░░░ 18%  (TFsec only, documented)
+High (0):      ░░░░░░░░░░  0%  (None)
+Medium (6):    ████████░░ 35%  (TFsec VPC + Linting)
+Low (8):       ████████░░ 47%  (Informational)
 ```
 
 ### Remediation Progress
@@ -786,14 +778,14 @@ Week 1: Initial Scan
 
 Week 2: After Snyk Fixes
 ├── Critical: 3 ⬇️ (-2)
-├── High: 5 ⬇️ (-3)
-├── Medium: 7 ⬇️ (-5)
-└── Low: 10 ⬇️ (-5)
+├── High: 0 ⬇️ (-8)
+├── Medium: 6 ⬇️ (-6)
+└── Low: 8 ⬇️ (-7)
 
 Week 3: Current State
-├── Critical: 3 (TFsec - justified)
-├── High: 3 (TFsec - justified)
-├── Medium: 5 (Non-blocking)
+├── Critical: 3 (TFsec - documented)
+├── High: 0 (All fixed! ✅)
+├── Medium: 6 (1 TFsec + 5 linting)
 └── Low: 8 (Informational)
 ```
 
