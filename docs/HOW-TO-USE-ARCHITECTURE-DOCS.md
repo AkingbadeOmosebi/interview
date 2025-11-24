@@ -12,11 +12,11 @@ You now have three comprehensive architecture deliverables for your Opsfolio pro
 A comprehensive text-based architecture diagram with detailed component descriptions, data flows, and technology explanations.
 
 ### When to Use It
-- ✅ **During Interviews**: Open this file and walk through your architecture verbally
 - ✅ **Quick Reference**: Search for specific components (Ctrl+F)
 - ✅ **Documentation**: Include in technical design documents
 - ✅ **README Enhancement**: Copy sections to your README.md
 - ✅ **Learning**: Refresh your memory on specific components
+- ✅ **Technical Discussions**: Walk through your architecture with others
 
 ### How to Use It
 ```bash
@@ -29,13 +29,6 @@ code docs/architecture-diagram-detailed.md
 # View in GitHub (rendered markdown)
 # Navigate to the file in your GitHub repository
 ```
-
-### Best Practices for Interviews
-1. **Start with the Overview**: Explain the dual environment strategy (local + cloud)
-2. **Follow the Flow**: Walk through a complete deployment cycle
-3. **Highlight Security**: Emphasize shift-left security practices
-4. **Show Observability**: Explain monitoring and alerting setup
-5. **Discuss Trade-offs**: Mention cost vs. availability decisions
 
 ---
 
@@ -150,18 +143,6 @@ Use your editor's outline/table of contents feature:
 **GitHub**:
 - File automatically shows TOC at top
 
-### Interview Question Mapping
-
-| Interview Question | Reference Section |
-|-------------------|------------------|
-| "How do you ensure security?" | Section 2: Shift-Left Security Pipeline |
-| "How do you handle secrets?" | Section 8: Secrets Management |
-| "Explain your CI/CD process" | Section 3: Build Pipeline + Section 12: Workflow |
-| "How do you monitor applications?" | Section 7: Observability Stack |
-| "How do you manage infrastructure?" | Section 10: Terraform & IaC |
-| "How do you control costs?" | Section 11: Cost Management |
-| "Explain your deployment strategy" | Section 5: GitOps Continuous Deployment |
-
 ---
 
 ## 🎯 Using All Three Together
@@ -171,20 +152,20 @@ Use your editor's outline/table of contents feature:
 2. **Show visual**: Draw.io diagram (professional presentation)
 3. **Dive deep**: Component guide (answer specific questions)
 
-### For Interviews
+### For Technical Presentations
 
-**Initial 5 minutes** (Overview):
-- Share screen with ASCII diagram
+**Overview Phase**:
+- Share the ASCII diagram for high-level architecture
 - Walk through: Code → CI/CD → Deploy → Monitor
 
-**Next 15 minutes** (Technical Deep Dive):
-- Open Draw.io diagram for visual reference
-- Explain specific components interviewer is interested in
-- Reference component guide for exact configurations
+**Deep Dive Phase**:
+- Use Draw.io diagram for visual reference
+- Explain specific components and their interactions
+- Reference component guide for exact configurations and commands
 
-**Q&A** (Remaining time):
+**Q&A Phase**:
 - Use component guide to answer detailed questions
-- Show actual code/configs if needed
+- Show actual code/configs when relevant
 - Demonstrate live environment (if available)
 
 ### For Blog Posts / LinkedIn
@@ -295,28 +276,6 @@ Convert each section into blog posts:
 
 ---
 
-## 💡 Interview Tips
-
-### Opening Statement
-"I'd like to walk you through my DevSecOps portfolio project, Opsfolio. It demonstrates a complete CI/CD pipeline with security-first practices, from local development on K3s to production deployment on AWS EKS."
-
-### When Asked About Security
-"I implemented a shift-left security approach with multiple layers..."
-*(Open component guide, Section 2)*
-
-### When Asked About Monitoring
-"I set up a complete observability stack with Prometheus, Grafana, and Alertmanager..."
-*(Open component guide, Section 7)*
-
-### When Asked About Costs
-"I'm very conscious of cloud costs. I integrated Infracost into my Terraform pipeline..."
-*(Open component guide, Section 11)*
-
-### Closing Statement
-"This project demonstrates my ability to build production-ready infrastructure with security, observability, and cost management built in from day one. All documentation and code are available in my GitHub repository."
-
----
-
 ## 📞 Questions?
 
 If you have questions about using these documents:
@@ -327,8 +286,8 @@ If you have questions about using these documents:
 
 ---
 
-**Pro Tip**: Print the ASCII diagram or have it open on a second monitor during interviews. It's an excellent reference when answering technical questions!
+**Pro Tip**: Keep the ASCII diagram open on a second monitor for quick reference during technical discussions. It helps navigate the architecture efficiently!
 
 ---
 
-Good luck with your interviews! You now have comprehensive architecture documentation that demonstrates professional-level DevSecOps expertise.
+You now have comprehensive architecture documentation that demonstrates professional-level DevSecOps expertise. Use these documents as your technical reference and communication aid.

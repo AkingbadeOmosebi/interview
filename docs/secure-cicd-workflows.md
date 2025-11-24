@@ -381,22 +381,16 @@ git push
 - **Impact**: Minimal - related to resource limits and labels
 - **Risk**: Acceptable for demo/portfolio environment
 
-### Interview Talking Points
+### Security Remediation Highlights
 
-**"Walk me through how you handle security vulnerabilities":**
-
-> "I use Snyk for continuous container and dependency scanning. Recently, Snyk flagged 18 vulnerabilities in our nginx base image - 2 Critical and 4 High severity CVEs in the libxml2 library. The Critical issues were CVE-2025-49794 and CVE-2025-49796, both with CVSS scores of 9.1.
->
-> Instead of patching individual libraries, I followed Snyk's recommendation to upgrade the base image from nginx:1.27-alpine to nginx:1.29.3-alpine. This single change eliminated all 18 vulnerabilities - a much cleaner solution than trying to patch system libraries in a container.
->
-> I verified the fix by re-scanning with Snyk, confirmed 0 vulnerabilities, then deployed the updated image through our CI/CD pipeline. The entire remediation took about 15 minutes, and we didn't have to modify any application code."
-
-**Key Points:**
-- ✅ Proactive security monitoring (not just reactive)
-- ✅ Risk-based prioritization (Critical/High first)
-- ✅ Root cause fix (base image upgrade vs. patching)
-- ✅ Verification (re-scan after fix)
-- ✅ Minimal disruption (no app code changes needed)
+**Vulnerability Remediation Process:**
+- Identified 18 vulnerabilities through Snyk container scanning (2 Critical, 4 High, 12 Low)
+- Critical CVEs: CVE-2025-49794 and CVE-2025-49796 (both CVSS 9.1)
+- Root cause: Outdated libxml2 library in nginx:1.27-alpine base image
+- Solution: Upgraded base image to nginx:1.29.3-alpine
+- Result: All 18 vulnerabilities eliminated through single image upgrade
+- Verification: Re-scanned with Snyk and Trivy - 0 vulnerabilities found
+- Impact: No application code changes required, deployed via standard CI/CD pipeline
 
 ### How to Add Screenshots
 ```bash
@@ -934,44 +928,6 @@ npm run lint:fix
 - [ ] Implement least-privilege IAM
 - [ ] Restrict security group ingress
 - [ ] Enable encryption for all resources
-
----
-
-## Interview Talking Points
-
-### Demonstrating Security Knowledge
-
-**When discussing this project:**
-
-1. **Shift-Left Security**
-   - "I implemented 6 automated security layers that run on every commit"
-   - "Security issues are caught before they reach production"
-
-2. **Vulnerability Management**
-   - "I actively monitor and fix vulnerabilities - here's how I resolved 2 critical and 3 high severity issues in dependencies"
-   - Show Snyk before/after screenshots
-
-3. **Risk Assessment**
-   - "I documented the 6 TFsec findings and made conscious decisions about acceptable risk for a demo environment"
-   - "Here's my production hardening plan for each issue"
-
-4. **Continuous Improvement**
-   - "Security scanning runs automatically on every push and weekly scheduled scans"
-   - "I have a remediation workflow documented"
-
-5. **Defense in Depth**
-   - "Multiple layers: secrets scanning, dependency checking, container scanning, and IaC analysis"
-   - "No single point of failure in security posture"
-
-### Sample Interview Response
-
-**Q: "How do you handle security in your CI/CD pipeline?"**
-
-**A:** "I implement a shift-left security approach with 6 automated scanners. Let me show you my recent Snyk scan where I identified and fixed 2 critical vulnerabilities in semantic-release dependencies. The fix was straightforward - I updated to patched versions and verified with both npm audit and Snyk.
-
-I also have TFsec scanning my infrastructure code, which flagged 6 issues. Three are critical - like the EKS public endpoint. For this portfolio demo, I documented why it's acceptable, but I have a production remediation plan that includes private endpoints, VPN access, and proper logging.
-
-What's important is that I'm not hiding these issues - I understand them, I've made conscious trade-offs, and I know how to fix them when moving to production. That's the kind of security mindset I bring to any team."
 
 ---
 
