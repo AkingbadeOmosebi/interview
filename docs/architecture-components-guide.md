@@ -25,7 +25,7 @@ This guide provides detailed explanations of each component in the Opsfolio DevS
 
 ### GitHub Repository Structure
 
-**Location**: `github.com/AkingbadeOmosebi/Opsfolio-Interview-App`
+**Location**: `github.com/AkingbadeOmosebi/interview` (ArgoCD uses `interview.git`)
 
 **Purpose**: Single source of truth for all code, infrastructure, and configuration.
 
@@ -33,7 +33,7 @@ This guide provides detailed explanations of each component in the Opsfolio DevS
 
 ```
 /
-├── app/                          # Node.js application source code
+├── app/                          # Static HTML application (nginx-served)
 │   ├── index.js                  # Main application entry point
 │   ├── package.json              # Dependencies
 │   └── public/                   # Static assets
@@ -595,7 +595,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App
+    repoURL: https://github.com/AkingbadeOmosebi/interview.git
     targetRevision: main
     path: k8s
   destination:
@@ -813,15 +813,19 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 3000
-          initialDelaySeconds: 10
+            port: 8080
+          initialDelaySeconds: 30
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /
-            port: 3000
-          initialDelaySeconds: 5
+            port: 8080
+          initialDelaySeconds: 10
           periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
 ```
 
 **Key features**:
@@ -841,18 +845,20 @@ metadata:
   name: interview-app-service
   namespace: default
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
-  - port: 80
-    targetPort: 3000
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 31080
     protocol: TCP
   selector:
     app: interview-app
 ```
 
 **Service types**:
-- **ClusterIP**: Internal only (default, used here)
-- **NodePort**: Accessible on node IP:port
+- **NodePort**: Accessible on node IP:port (used for local K3s)
+- **ClusterIP**: Internal only
 - **LoadBalancer**: External load balancer (AWS ELB in cloud)
 
 ### Accessing the Application
@@ -1390,7 +1396,7 @@ resource "aws_iam_openid_connect_provider" "github" {
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:AkingbadeOmosebi/Opsfolio-Interview-App:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:AkingbadeOmosebi/interview:ref:refs/heads/main"
         }
       }
     }
@@ -1409,7 +1415,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 resource "aws_eks_cluster" "main" {
   name     = "opsfolio-eks"
   role_arn = aws_iam_role.eks_cluster.arn
-  version  = "1.28"
+  version  = "1.29"
 
   vpc_config {
     subnet_ids              = concat(aws_subnet.private[*].id, aws_subnet.public[*].id)
@@ -1446,12 +1452,12 @@ resource "aws_eks_node_group" "main" {
   subnet_ids      = aws_subnet.private[*].id
 
   scaling_config {
-    desired_size = 2
-    max_size     = 4
-    min_size     = 2
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
   }
 
-  instance_types = ["t3.medium"]
+  instance_types = ["t3.small"]
 
   remote_access {
     ec2_ssh_key = "my-keypair"  # Optional SSH access
@@ -1465,16 +1471,16 @@ resource "aws_eks_node_group" "main" {
 ```
 
 **Auto-scaling**:
-- Horizontal Pod Autoscaler (HPA): Scale pods based on CPU/memory
-- Cluster Autoscaler: Add/remove nodes based on pending pods
-- Min: 2 nodes (high availability)
-- Max: 4 nodes (cost control)
+- Horizontal Pod Autoscaler (HPA): Scale pods based on CPU/memory (not enabled for demo)
+- Cluster Autoscaler: Add/remove nodes based on pending pods (not enabled for demo)
+- Single node deployment (cost-optimized for portfolio demo)
+- Production would use: Min 2, Max 4+ for high availability
 
 **Instance selection**:
-- `t3.medium`: 2 vCPU, 4GB RAM
+- `t3.small`: 2 vCPU, 2GB RAM
 - Burstable performance
-- Cost-effective for dev/staging
-- Production may use `m5.large` or spot instances
+- Cost-effective for dev/demo (single node for cost control)
+- Production may scale to `t3.medium`, `m5.large` or spot instances
 
 #### 9.5 Application Load Balancer (ALB)
 
@@ -1572,7 +1578,7 @@ kubectl port-forward svc/interview-app-service 8080:80
 **Monthly cost estimate**:
 ```
 EKS Control Plane: $73/month
-t3.medium nodes (2): ~$60/month
+t3.small node (1): ~$15/month
 NAT Gateway: ~$35/month
 Load Balancer: ~$20/month
 Total: ~$188/month (can be reduced with spot instances)
@@ -1631,7 +1637,7 @@ module "eks" {
   source = "terraform-aws-modules/eks/aws"
 
   cluster_name    = "opsfolio-eks"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -1642,7 +1648,7 @@ module "eks" {
       min_size     = 2
       max_size     = 4
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.small"]
       capacity_type  = "ON_DEMAND"  # or "SPOT" for cost savings
     }
   }
@@ -1696,7 +1702,7 @@ variable "cluster_name" {
 variable "node_instance_type" {
   description = "EC2 instance type for worker nodes"
   type        = string
-  default     = "t3.medium"
+  default     = "t3.small"
 }
 ```
 
@@ -1851,7 +1857,7 @@ terraform destroy
 | Resource | Monthly Cost | Change |
 |----------|--------------|--------|
 | aws_eks_cluster.main | $73.00 | +$73.00 |
-| aws_eks_node_group.main (t3.medium x2) | $60.00 | +$60.00 |
+| aws_eks_node_group.main (t3.small x1) | $15.00 | +$15.00 |
 | aws_nat_gateway.main (x2) | $65.00 | +$65.00 |
 | aws_lb.application | $20.00 | +$20.00 |
 | **Total** | **$218.00** | **+$218.00 (+100%)** |
@@ -2064,7 +2070,7 @@ This project showcases production-ready DevSecOps practices suitable for enterpr
 - **Local Setup Guide**: `/docs/local-onprem-setup.md`
 - **Cloud Setup Guide**: `/docs/cloud-infrastructure-setup.md`
 - **CI/CD Workflows**: `/docs/Secure-Continous-Integration-Workflows.md`
-- **GitHub Repository**: https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App
+- **GitHub Repository**: https://github.com/AkingbadeOmosebi/interview
 
 ---
 
