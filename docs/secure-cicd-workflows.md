@@ -960,24 +960,7 @@ screenshots/
    - Highlight: 3 critical, 3 high
    - Show: Issue descriptions
 
-### Taking Screenshots
 
-```bash
-# 1. Run each security scan
-# 2. Capture the results (GitHub Actions logs or local runs)
-# 3. Save to appropriate location
-# 4. Update image paths in this document if needed
-```
-
----
-
-## Next Steps
-
-### Immediate Actions
-- [ ] Take screenshots of all security scan results
-- [ ] Add screenshots to `screenshots/security/` directory
-- [ ] Update this document with any tool version changes
-- [ ] Review and update remediation status
 
 ### Future Improvements
 - [ ] Implement automated screenshot generation
