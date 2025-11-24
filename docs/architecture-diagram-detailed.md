@@ -46,18 +46,18 @@
 │                                                                                                 │
 │  ┌───────────────────────────────────────────────────────────────────────────────────┐          │
 │  │  1. Docker Build                                                                  │          │
-│  │     └── Build single-stage Dockerfile (nginx-based, app/ directory)              │           │
+│  │     └── Build single-stage Dockerfile (nginx-based, app/ directory)               │          │
 │  │                                                                                   │          │
 │  │  2. Trivy Container Scan                                                          │          │
-│  │     └── Scan image for OS & dependency vulnerabilities                           │           │
+│  │     └── Scan image for OS & dependency vulnerabilities                            │          │
 │  │                                                                                   │          │
 │  │  3. Push to Container Registry                                                    │          │
-│  │     └── ghcr.io/akingbadeomosebi/interview-app:vX.Y.Z                            │           │
+│  │     └── ghcr.io/akingbadeomosebi/interview-app:vX.Y.Z                             │          │
 │  │                                                                                   │          │
 │  │  4. Semantic Release                                                              │          │
-│  │     ├── Generate version tags (vX.Y.Z)                                           │           │
-│  │     ├── Update CHANGELOG.md                                                      │           │
-│  │     └── Create GitHub Release                                                    │           │
+│  │     ├── Generate version tags (vX.Y.Z)                                            │          │
+│  │     ├── Update CHANGELOG.md                                                       │          │
+│  │     └── Create GitHub Release                                                     │          │
 │  └───────────────────────────────────────────────────────────────────────────────────┘          │
 └─────────────────────────────────────┬───────────────────────────────────────────────────────────┘
                                       │
