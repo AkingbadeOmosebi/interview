@@ -34,9 +34,10 @@ This guide provides detailed explanations of each component in the Opsfolio DevS
 ```
 /
 ├── app/                          # Static HTML application (nginx-served)
-│   ├── index.js                  # Main application entry point
-│   ├── package.json              # Dependencies
-│   └── public/                   # Static assets
+│   ├── index.html                # Main HTML page
+│   ├── Dockerfile                # Single-stage nginx Dockerfile
+│   ├── nginx.conf                # Nginx server configuration
+│   └── assets/                   # Static assets (CSS, JS, images)
 │
 ├── k8s/                          # Kubernetes manifests
 │   ├── deployment.yaml           # Application deployment
@@ -316,41 +317,62 @@ After security checks pass, the application is built, scanned, and released auto
 
 **Dockerfile**: `app/Dockerfile`
 
-**Multi-stage build**:
+**Single-stage nginx build** (static HTML application):
 
 ```dockerfile
-# Stage 1: Build stage
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
+# Base image: nginx alpine for small footprint
+FROM nginx:1.29.3-alpine
 
-# Stage 2: Runtime stage
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app .
-USER node
-EXPOSE 3000
-CMD ["node", "index.js"]
+# Security: upgrade OS packages
+USER root
+RUN apk update && apk upgrade --no-cache
+
+# Create temp directories for nginx runtime (non-root writable)
+RUN mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp \
+    && chown -R 101:101 /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp
+
+# Copy website files
+COPY . /usr/share/nginx/html
+
+# Set ownership for nginx non-root user (UID 101)
+RUN chown -R 101:101 /usr/share/nginx/html \
+    && chown -R 101:101 /var/cache/nginx \
+    && chown -R 101:101 /var/log/nginx
+
+# Replace default nginx config with custom hardened config
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Run as non-root user
+USER 101
+
+# Expose non-privileged HTTP port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK CMD wget --spider -q http://localhost:8080 || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
 ```
 
 **Benefits**:
-- Smaller final image (no build tools)
-- Reduced attack surface
-- Faster image pulls
-- Better layer caching
+- Small footprint (nginx:alpine base)
+- Security hardened (non-root user, non-privileged port)
+- Production-ready (health checks, custom nginx config)
+- No build dependencies needed (pure static content)
 
 **Build command**:
 ```bash
-docker build -t interview-app:latest .
+docker build -t interview-app:latest app/
 ```
 
 **Best practices**:
-- Use specific base image versions (not `latest`)
-- Run as non-root user (`USER node`)
+- Use specific base image versions (nginx:1.29.3-alpine)
+- Run as non-root user (USER 101 = nginx user)
+- Use non-privileged port 8080 (not 80)
+- Include health checks
 - Use `.dockerignore` to exclude unnecessary files
-- Minimize layers (combine RUN commands)
 
 #### 3.2 Trivy Container Scan
 
@@ -358,7 +380,7 @@ docker build -t interview-app:latest .
 
 **Scan types**:
 1. **OS Packages**: Alpine Linux package vulnerabilities
-2. **Application Dependencies**: Node.js package vulnerabilities
+2. **Application Dependencies**: Nginx package vulnerabilities
 3. **Misconfigurations**: Dockerfile best practices
 
 **Severity thresholds**:
@@ -802,14 +824,14 @@ spec:
       - name: interview-app
         image: ghcr.io/akingbadeomosebi/interview-app:v3.0.5
         ports:
-        - containerPort: 3000
+        - containerPort: 8080
         resources:
           requests:
             memory: "128Mi"
             cpu: "100m"
           limits:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: "512Mi"
+            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /
@@ -1506,7 +1528,7 @@ spec:
   type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 8080
   selector:
     app: interview-app
 ```
