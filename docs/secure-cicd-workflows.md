@@ -521,7 +521,7 @@ Static analysis of Terraform code to detect security misconfigurations before in
 
 #### Status: ⚠️ **4 ISSUES** - 3 Critical, 1 Medium (Documented)
 
-![TFsec Scan Results](/screenshots/security/TFsec-results.png.png)
+![TFsec Scan Results](/screenshots/security/TFsec-results.png)
 
 **Scan Summary:**
 - **Critical**: 3 🔴
