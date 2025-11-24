@@ -283,79 +283,132 @@ Software Composition Analysis (SCA) to detect vulnerabilities in third-party dep
 
 ### Results
 
-#### Status: ✅ **RESOLVED** - Critical & High vulnerabilities fixed
+#### Status: ✅ **RESOLVED** - All Critical & High vulnerabilities fixed
 
 ![Snyk Vulnerability Fixed](/screenshots/security/snyk-fixed-vulnerabilities.png)
 
-**Before Remediation:**
+**Before Remediation (app/Dockerfile):**
 - **Critical**: 2 ❌
-- **High**: 3 ❌
-- **Medium**: 5 ⚠️
-- **Low**: 8 ℹ️
+- **High**: 4 ❌
+- **Medium**: 0 ⚠️
+- **Low**: 12 ℹ️
+- **Total**: 18 vulnerabilities
+- **Base Image**: nginx:1.27-alpine
 
 **After Remediation:**
 - **Critical**: 0 ✅
 - **High**: 0 ✅
 - **Medium**: 0 ✅
-- **Low**: 2 ℹ️
+- **Low**: ~7 ℹ️ (non-critical, k8s manifests only)
+- **Base Image**: nginx:1.29.3-alpine ⬆️
 
 ### Vulnerabilities Fixed
 
-#### 1. **semantic-release** - Arbitrary Code Execution
+#### 1. **libxml2/libxml2 - Expired Pointer Dereference**
 - **Severity**: CRITICAL 🔴
-- **CVE**: CVE-2024-XXXX
-- **Fix**: Upgraded from 23.0.0 → 24.2.9
+- **CVE**: CVE-2025-49794
+- **CVSS Score**: 9.1 (Critical)
+- **Package**: libxml2/libxml2@2.13.4-r5
+- **Introduced through**: nginx:1.27-alpine base image
+- **Fix**: Upgraded base image nginx:1.27-alpine → 1.29.3-alpine
+- **Fixed in**: libxml2@2.13.9+0, @2.13.9+0
 - **Status**: ✅ FIXED
 
-#### 2. **@semantic-release/github** - Information Disclosure
+#### 2. **libxml2/libxml2 - Out-of-bounds Read**
+- **Severity**: CRITICAL 🔴
+- **CVE**: CVE-2025-49796
+- **CVSS Score**: 9.1 (Critical)
+- **Package**: libxml2/libxml2@2.13.4-r5
+- **Introduced through**: nginx:1.27-alpine base image
+- **Fix**: Upgraded base image nginx:1.27-alpine → 1.29.3-alpine
+- **Fixed in**: libxml2@2.13.9+0, @2.13.9+0
+- **Exploit maturity**: No known exploit
+- **Status**: ✅ FIXED
+
+#### 3. **Additional High Severity Issues (4)**
 - **Severity**: HIGH 🟠
-- **CVE**: CVE-2024-YYYY
-- **Fix**: Upgraded from 11.0.0 → 12.0.1
-- **Status**: ✅ FIXED
+- **Affected**: Various libraries in nginx:1.27-alpine
+- **Fix**: Base image upgrade to nginx:1.29.3-alpine
+- **Status**: ✅ ALL FIXED
 
-#### 3. **Other Dependencies** - Multiple Issues
-- **Affected**: Various semantic-release plugins
-- **Fix**: Updated to latest patched versions
+#### 4. **Low Severity Issues (12)**
+- **Severity**: LOW ℹ️
+- **Affected**: System libraries in Alpine Linux
+- **Fix**: Base image upgrade resolved all
 - **Status**: ✅ FIXED
 
 ### How Fixes Were Applied
 
 ```bash
-# 1. Review Snyk report
-snyk test
+# 1. Review Snyk report in dashboard
+# Navigate to Projects → app/Dockerfile
+# Review: 2 Critical + 4 High vulnerabilities in nginx:1.27-alpine
 
-# 2. Apply automated fixes
-snyk fix
+# 2. Check Snyk recommendations
+# Snyk showed: "Minor upgrades" → nginx:1.29.3-alpine (0 vulnerabilities)
 
-# 3. Manual updates in package.json
-npm update @semantic-release/github
-npm update semantic-release
+# 3. Update Dockerfile base image
+# app/Dockerfile - Line 1
+FROM nginx:1.27-alpine    # Before (18 vulnerabilities)
+FROM nginx:1.29.3-alpine  # After (0 vulnerabilities) ✅
 
-# 4. Verify fixes
-npm audit
-snyk test
+# 4. Rebuild and test
+docker build -t opsfolio-interview-app:latest .
+docker run -p 8080:80 opsfolio-interview-app:latest
 
-# 5. Commit changes
-git add package.json package-lock.json
-git commit -m "fix: resolve critical Snyk vulnerabilities"
+# 5. Re-scan with Snyk
+snyk container test opsfolio-interview-app:latest
+
+# 6. Verify fixes in Snyk dashboard
+# Result: ✅ All Critical/High issues resolved!
+
+# 7. Commit changes
+git add app/Dockerfile
+git commit -m "fix: upgrade nginx base image to resolve critical CVEs"
+git push
 ```
 
 ### Current Status
 
-**Dependencies:**
-- ✅ All critical vulnerabilities resolved
-- ✅ All high vulnerabilities resolved
-- ✅ Medium vulnerabilities addressed
-- ⚠️ 2 low severity issues (acceptable risk)
+**Container Security:**
+- ✅ All critical vulnerabilities resolved (2 → 0)
+- ✅ All high vulnerabilities resolved (4 → 0)
+- ✅ All medium vulnerabilities resolved (0 → 0)
+- ✅ Docker image upgraded (nginx:1.27 → 1.29.3-alpine)
 
 **Remaining Low Severity Issues:**
-1. **htmlhint** - Minor regular expression issue (no exploit available)
-2. **stylelint** - Dependency warning (dev-only, no runtime impact)
+- **Kubernetes manifests**: ~7 low severity findings (no critical/high)
+- **Impact**: Minimal - related to resource limits and labels
+- **Risk**: Acceptable for demo/portfolio environment
+
+### Interview Talking Points
+
+**"Walk me through how you handle security vulnerabilities":**
+
+> "I use Snyk for continuous container and dependency scanning. Recently, Snyk flagged 18 vulnerabilities in our nginx base image - 2 Critical and 4 High severity CVEs in the libxml2 library. The Critical issues were CVE-2025-49794 and CVE-2025-49796, both with CVSS scores of 9.1.
+>
+> Instead of patching individual libraries, I followed Snyk's recommendation to upgrade the base image from nginx:1.27-alpine to nginx:1.29.3-alpine. This single change eliminated all 18 vulnerabilities - a much cleaner solution than trying to patch system libraries in a container.
+>
+> I verified the fix by re-scanning with Snyk, confirmed 0 vulnerabilities, then deployed the updated image through our CI/CD pipeline. The entire remediation took about 15 minutes, and we didn't have to modify any application code."
+
+**Key Points:**
+- ✅ Proactive security monitoring (not just reactive)
+- ✅ Risk-based prioritization (Critical/High first)
+- ✅ Root cause fix (base image upgrade vs. patching)
+- ✅ Verification (re-scan after fix)
+- ✅ Minimal disruption (no app code changes needed)
 
 ### How to Add Screenshots
 ```bash
-# Take screenshot of Snyk results showing fixes and save to:
-screenshots/security/snyk-fixed-vulnerabilities.png
+# You have 5 screenshots showing the security journey:
+# 1. snyk-dashboard-vulnerable-projects.png - Initial state
+# 2. snyk-dashboard-pending-tasks.png - Overview of issues
+# 3. snyk-dockerfile-critical-issues.png - Detailed CVE view
+# 4. snyk-dockerfile-upgrade-recommendation.png - Fix recommendation
+# 5. snyk-projects-fixed.png - Final clean state
+
+# Save all to:
+screenshots/security/snyk-*.png
 ```
 
 ---
