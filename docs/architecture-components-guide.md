@@ -1348,12 +1348,12 @@ kubectl create secret generic grafana-admin-secret \
 **Subnets**:
 ```
 Public Subnets (for Load Balancers):
-├── us-east-1a: 10.0.1.0/24
-└── us-east-1b: 10.0.2.0/24
+├── eu-central-1a: 10.0.1.0/24
+└── eu-central-1b: 10.0.2.0/24
 
 Private Subnets (for EKS Nodes):
-├── us-east-1a: 10.0.10.0/24
-└── us-east-1b: 10.0.11.0/24
+├── eu-central-1a: 10.0.10.0/24
+└── eu-central-1b: 10.0.11.0/24
 ```
 
 **Internet Gateway**: Allows public subnet outbound access
@@ -1480,7 +1480,7 @@ resource "aws_eks_node_group" "main" {
 - `t3.small`: 2 vCPU, 2GB RAM
 - Burstable performance
 - Cost-effective for dev/demo (single node for cost control)
-- Production may scale to `t3.medium`, `m5.large` or spot instances
+- Production may scale to larger `t3.small` clusters, `m5.large` or spot instances
 
 #### 9.5 Application Load Balancer (ALB)
 
@@ -1533,7 +1533,7 @@ spec:
 **Option 1: kubectl** (manual)
 ```bash
 # Configure kubectl
-aws eks update-kubeconfig --name opsfolio-eks --region us-east-1
+aws eks update-kubeconfig --name opsfolio-eks --region eu-central-1
 
 # Apply manifests
 kubectl apply -f k8s/
@@ -1556,10 +1556,10 @@ kubectl apply -f k8s/argocd.yaml
 # Get ALB DNS
 kubectl get svc interview-app-service
 # NAME                    TYPE           EXTERNAL-IP
-# interview-app-service   LoadBalancer   a1b2c3-123456.us-east-1.elb.amazonaws.com
+# interview-app-service   LoadBalancer   a1b2c3-123456.eu-central-1.elb.amazonaws.com
 
 # Access application
-curl http://a1b2c3-123456.us-east-1.elb.amazonaws.com
+curl http://a1b2c3-123456.eu-central-1.elb.amazonaws.com
 ```
 
 **Via kubectl port-forward** (debugging):
@@ -1619,7 +1619,7 @@ module "vpc" {
   name = "opsfolio-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-east-1a", "us-east-1b"]
+  azs             = ["eu-central-1a", "eu-central-1b"]
   private_subnets = ["10.0.10.0/24", "10.0.11.0/24"]
   public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
 
@@ -1690,7 +1690,7 @@ provider "aws" {
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
+  default     = "eu-central-1"
 }
 
 variable "cluster_name" {
