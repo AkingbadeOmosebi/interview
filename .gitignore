@@ -45,3 +45,6 @@ Thumbs.db
 
 # Optional: ignore coverage reports
 coverage/
+
+# Private interview preparation materials
+INTERVIEW-PREP-PRIVATE.md
