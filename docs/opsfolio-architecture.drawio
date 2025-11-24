@@ -246,7 +246,7 @@
         <mxCell id="aws-alb" value="AWS Application Load Balancer" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="740" y="1630" width="800" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="alb-dns" value="DNS: opsfolio-&lt;random&gt;.us-east-1.elb.amazonaws.com" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-alb">
+        <mxCell id="alb-dns" value="DNS: opsfolio-&lt;random&gt;.eu-central-1.elb.amazonaws.com" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;" vertex="1" parent="aws-alb">
           <mxGeometry y="30" width="800" height="24" as="geometry" />
         </mxCell>
         <mxCell id="alb-note" value="Can add: Route53 custom domain + ACM SSL for HTTPS" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2" vertex="1" parent="aws-alb">

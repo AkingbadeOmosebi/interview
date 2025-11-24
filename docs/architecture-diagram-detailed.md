@@ -46,7 +46,7 @@
 │                                                                                                 │
 │  ┌───────────────────────────────────────────────────────────────────────────────────┐         │
 │  │  1. Docker Build                                                                  │         │
-│  │     └── Build multi-stage Dockerfile (app/ directory)                            │         │
+│  │     └── Build Dockerfile (nginx-based, non-root, Alpine)                         │         │
 │  │                                                                                   │         │
 │  │  2. Trivy Container Scan                                                          │         │
 │  │     └── Scan image for OS & dependency vulnerabilities                           │         │
@@ -237,7 +237,7 @@
 │                                  ☁️ AWS CLOUD INFRASTRUCTURE                                     │
 │                                                                                                 │
 │  ┌──────────────────────────────────────────────────────────────────────────────────┐          │
-│  │  AWS Region: us-east-1 (configurable)                                            │          │
+│  │  AWS Region: eu-central-1 (Frankfurt)                                             │          │
 │  │                                                                                  │          │
 │  │  ┌────────────────────────────────────────────────────────────────────┐         │          │
 │  │  │  VPC: opsfolio-vpc                                                  │         │          │
@@ -313,7 +313,7 @@
 │                                     │                                                          │
 │  ┌──────────────────────────────────▼───────────────────────────────────────────────┐          │
 │  │  AWS APPLICATION LOAD BALANCER (ALB)                                            │          │
-│  │  ├── DNS: opsfolio-<random>.us-east-1.elb.amazonaws.com                         │          │
+│  │  ├── DNS: opsfolio-<random>.eu-central-1.elb.amazonaws.com                      │          │
 │  │  ├── SSL/TLS: Can be configured with ACM certificate                            │          │
 │  │  ├── Health checks: HTTP GET / → 200 OK                                         │          │
 │  │  └── Target: EKS NodePort service                                               │          │
@@ -340,7 +340,7 @@
 ┌─────────────────────────────────────▼───────────────────────────────────────────────────────────┐
 │                                   🌐 PUBLIC ACCESS (AWS)                                        │
 │                                                                                                 │
-│  Public URL: http://opsfolio-<id>.us-east-1.elb.amazonaws.com                                 │
+│  Public URL: http://opsfolio-<id>.eu-central-1.elb.amazonaws.com                              │
 │  ├── Can add: Route 53 custom domain (opsfolio.yourdomain.com)                                │
 │  ├── Can add: ACM SSL certificate for HTTPS                                                    │
 │  └── Access: 24/7 production availability                                                      │
@@ -417,7 +417,7 @@ Networking & Access:
 Container & Registry:
 ├── Docker (containerization)
 ├── GHCR (GitHub Container Registry)
-└── Multi-stage builds (optimized images)
+└── Security-hardened builds (non-root, Alpine-based)
 
 Cost Management:
 └── Infracost (infrastructure cost estimation & PR feedback)

@@ -316,30 +316,34 @@ After security checks pass, the application is built, scanned, and released auto
 
 **Dockerfile**: `app/Dockerfile`
 
-**Multi-stage build**:
+**Single-stage build** (optimized for static content):
 
 ```dockerfile
-# Stage 1: Build stage
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
+FROM nginx:1.29.3-alpine
 
-# Stage 2: Runtime stage
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app .
-USER node
-EXPOSE 3000
-CMD ["node", "index.js"]
+# Security: Run as non-root user (nginx user, UID 101)
+USER root
+RUN apk update && apk upgrade --no-cache
+
+# Copy static content
+COPY . /usr/share/nginx/html
+
+# Set ownership to nginx user
+RUN chown -R 101:101 /usr/share/nginx/html
+
+# Drop to non-root
+USER 101
+
+EXPOSE 8080
+HEALTHCHECK CMD wget --spider -q http://localhost:8080 || exit 1
+CMD ["nginx", "-g", "daemon off;"]
 ```
 
 **Benefits**:
-- Smaller final image (no build tools)
-- Reduced attack surface
-- Faster image pulls
-- Better layer caching
+- Minimal footprint (Alpine-based)
+- Security-hardened (non-root user)
+- Health checks built-in
+- No unnecessary build complexity for static sites
 
 **Build command**:
 ```bash
@@ -1342,12 +1346,12 @@ kubectl create secret generic grafana-admin-secret \
 **Subnets**:
 ```
 Public Subnets (for Load Balancers):
-├── us-east-1a: 10.0.1.0/24
-└── us-east-1b: 10.0.2.0/24
+├── eu-central-1a: 10.0.1.0/24
+└── eu-central-1b: 10.0.2.0/24
 
 Private Subnets (for EKS Nodes):
-├── us-east-1a: 10.0.10.0/24
-└── us-east-1b: 10.0.11.0/24
+├── eu-central-1a: 10.0.10.0/24
+└── eu-central-1b: 10.0.11.0/24
 ```
 
 **Internet Gateway**: Allows public subnet outbound access
@@ -1527,7 +1531,7 @@ spec:
 **Option 1: kubectl** (manual)
 ```bash
 # Configure kubectl
-aws eks update-kubeconfig --name opsfolio-eks --region us-east-1
+aws eks update-kubeconfig --name opsfolio-eks --region eu-central-1
 
 # Apply manifests
 kubectl apply -f k8s/
@@ -1550,10 +1554,10 @@ kubectl apply -f k8s/argocd.yaml
 # Get ALB DNS
 kubectl get svc interview-app-service
 # NAME                    TYPE           EXTERNAL-IP
-# interview-app-service   LoadBalancer   a1b2c3-123456.us-east-1.elb.amazonaws.com
+# interview-app-service   LoadBalancer   a1b2c3-123456.eu-central-1.elb.amazonaws.com
 
 # Access application
-curl http://a1b2c3-123456.us-east-1.elb.amazonaws.com
+curl http://a1b2c3-123456.eu-central-1.elb.amazonaws.com
 ```
 
 **Via kubectl port-forward** (debugging):
@@ -1613,7 +1617,7 @@ module "vpc" {
   name = "opsfolio-vpc"
   cidr = "10.0.0.0/16"
 
-  azs             = ["us-east-1a", "us-east-1b"]
+  azs             = ["eu-central-1a", "eu-central-1b"]
   private_subnets = ["10.0.10.0/24", "10.0.11.0/24"]
   public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
 
@@ -1684,7 +1688,7 @@ provider "aws" {
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
+  default     = "eu-central-1"  # Frankfurt
 }
 
 variable "cluster_name" {
