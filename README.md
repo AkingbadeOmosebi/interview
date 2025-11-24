@@ -47,7 +47,7 @@
 [![Docker Image](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/pkgs/container/interview-app)
 
 
-# ☁️ Cloud Side
+# ☁️ Cloud Side (AWS)
 
 ### Deployment & Destroy Workflows
 ![Terraform Deploy EKS](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/terraform-deploy-eks-tfsec.yaml/badge.svg)
