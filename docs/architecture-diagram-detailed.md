@@ -94,7 +94,7 @@
 │  ┌───────────────────────────────────────────────────────────────────────────────────┐         │
 │  │  ArgoCD Server (running in K3s argocd namespace)                                  │         │
 │  │                                                                                   │         │
-│  │  ├── Watches GitHub Repo: AkingbadeOmosebi/Opsfolio-Interview-App               │         │
+│  │  ├── Watches GitHub Repo: AkingbadeOmosebi/interview.git                          │         │
 │  │  │   └── Path: /k8s                                                              │         │
 │  │  │                                                                               │         │
 │  │  ├── ArgoCD Image Updater                                                        │         │
@@ -271,10 +271,9 @@
 │  │                              │                                                   │          │
 │  │  ┌───────────────────────────▼──────────────────────────────────────┐           │          │
 │  │  │  EKS NODE GROUP                                                   │           │          │
-│  │  │  ├── Instance Type: t3.medium (configurable)                     │           │          │
-│  │  │  ├── Min Nodes: 2                                                 │           │          │
-│  │  │  ├── Max Nodes: 4                                                 │           │          │
-│  │  │  ├── Auto-scaling: Enabled                                        │           │          │
+│  │  │  ├── Instance Type: t3.small (cost-optimized for demo)             │           │          │
+│  │  │  ├── Node Count: 1 (single node for cost control)                │           │          │
+│  │  │  ├── Auto-scaling: Disabled for demo (would enable in production)│           │          │
 │  │  │  └── AMI: EKS-optimized Amazon Linux 2                           │           │          │
 │  │  └────────────────────────────────────────────────────────────────────┘         │          │
 │  │                              │                                                   │          │
