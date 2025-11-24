@@ -60,6 +60,9 @@
 ![Infracost](https://img.shields.io/badge/Infracost-checked-green?logo=infracost)
 
 
+# Visual Architecture Diagram (draw.io)
+![Architecture](/screenshots/Opsfolio-App.drawio.png)
+
 
 # 📂 Documentation & Architecture Guides
 
