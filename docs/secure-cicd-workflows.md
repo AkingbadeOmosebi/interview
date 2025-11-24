@@ -905,61 +905,11 @@ npm run lint:fix
 **Production Checklist:**
 - [ ] Enable EKS cluster logging
 - [ ] Convert to private endpoint
-- [ ] Implement least-privilege IAM
+- [ ] Implement even more stricter least-privilege IAM
 - [ ] Restrict security group ingress
 - [ ] Enable encryption for all resources
 
 ---
-
-## Adding Your Screenshots
-
-### Directory Structure
-
-Create this structure for your screenshots:
-
-```bash
-mkdir -p screenshots/security
-
-screenshots/
-└── security/
-    ├── gitleaks-clean.png
-    ├── megalinter-results.png
-    ├── sonarcloud-dashboard.png
-    ├── snyk-fixed-vulnerabilities.png
-    ├── trivy-clean-scan.png
-    └── tfsec-issues.png
-```
-
-### Screenshot Guidelines
-
-**For each tool:**
-
-1. **GitLeaks**
-   - Show: Clean scan result, "No leaks found"
-   - Highlight: Number of files scanned
-
-2. **MegaLinter**
-   - Show: Summary table with linter results
-   - Highlight: Overall status, number of warnings
-
-3. **SonarCloud**
-   - Show: Project dashboard with ratings
-   - Highlight: Security rating (A), bug count, code smells
-
-4. **Snyk**
-   - Show: Before/after vulnerability counts
-   - Highlight: Fixed critical and high issues
-   - Optional: Show specific CVE fixes
-
-5. **Trivy**
-   - Show: Scan results showing 0 vulnerabilities
-   - Highlight: Base image and package count
-
-6. **TFsec**
-   - Show: List of 6 issues with severity
-   - Highlight: 3 critical, 3 high
-   - Show: Issue descriptions
-
 
 
 ### Future Improvements
@@ -990,4 +940,3 @@ screenshots/
 
 **Document Version**: 1.0
 **Last Updated**: 2025-11-24
-**Status**: Ready for screenshots
