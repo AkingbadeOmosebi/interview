@@ -24,11 +24,11 @@
 ## 🛡️ Security & CI/CD Pipeline
 
 ### Pipeline Status
-[![Gitleaks](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-git-leaks.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-git-leaks.yml)
-[![MegaLinter](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-mega-linter.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-mega-linter.yml)
-[![SonarCloud](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-sonarcloud-security.yaml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-sonarcloud-security.yaml)
-[![Snyk Security](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-snyk.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-snyk.yml)
-[![Docker Build & Push](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-docker-build-&-push-trivy-scan.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/ci-docker-build-&-push-trivy-scan.yml)
+[![Gitleaks](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/quality-checks.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/quality-checks.yml)
+[![MegaLinter](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/quality-checks.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/quality-checks.yml)
+[![SonarCloud](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/security-analysis.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/security-analysis.yml)
+[![Snyk Security](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/security-analysis.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/security-analysis.yml)
+[![Docker Build & Push](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/build-scan-release.yml/badge.svg)](https://github.com/AkingbadeOmosebi/Opsfolio-Interview-App/actions/workflows/build-scan-release.yml)
 
 ### Security Metrics
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=akingbade_interview_portfolio&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=akingbade_interview_portfolio)
