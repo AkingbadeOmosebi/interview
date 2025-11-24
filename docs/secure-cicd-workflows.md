@@ -25,19 +25,24 @@ This document showcases the comprehensive security scanning implemented in this 
 This project implements **6 automated security layers** that run on every commit and pull request:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    SHIFT-LEFT SECURITY PIPELINE                 │
-│                                                                 │
-│  ┌───────────┐  ┌────────────┐  ┌────────────┐  ┌──────────┐  │
-│  │ GitLeaks  │→ │ MegaLinter │→ │ SonarCloud │→ │   Snyk   │  │
-│  │  Secrets  │  │   Quality  │  │    SAST    │  │   SCA    │  │
-│  └───────────┘  └────────────┘  └────────────┘  └──────────┘  │
-│                                                                 │
-│  ┌──────────┐  ┌──────────┐                                    │
-│  │  Trivy   │→ │  TFsec   │                                    │
-│  │Container │  │   IaC    │                                    │
+┌────────────────────────────────────────────────────────────────┐
+│                    SHIFT-LEFT SECURITY PIPELINE                │
+│                                                                │
+│  ┌───────────┐  ┌────────────┐  ┌────────────┐  ┌──────────┐   │
+│  │ GitLeaks  │→ │ MegaLinter │→ │ SonarCloud │→ │   Snyk   │   │
+│  │  Secrets  │  │   Quality  │  │    SAST    │  │   SCA    │   │
+│  └───────────┘  └────────────┘  └────────────┘  └──────────┘   │
+│                                                                │
+│  ┌──────────┐  ┌────────────────┐                              │
+│  │  Trivy   │→ │ Secure Storage │                              │
+│  │Container │  │     (GHCR)     │                              │
+│  └──────────┘  └────────────────┘                              |
+|                                                                |
+|  ┌──────────┐  ┌──────────┐                                    │
+│  │  TFsec   │→ │Infra Nuke│                                    │
+│  │   Iac    │  │TF Destroy│                                    │
 │  └──────────┘  └──────────┘                                    │
-└─────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ### Blocking Criteria
@@ -86,7 +91,7 @@ Prevents accidental commit of sensitive information (API keys, passwords, tokens
 
 #### Status: ✅ **CLEAN** - No secrets detected
 
-![GitLeaks Clean Scan](/screenshots/security/gitleaks-clean.png)
+![GitLeaks Clean Scan](/screenshots/security/quality-checks.png)
 
 **Scan Summary:**
 - **Files Scanned**: 145
@@ -100,13 +105,7 @@ Prevents accidental commit of sensitive information (API keys, passwords, tokens
 ✅ Sealed Secrets for Kubernetes
 ✅ AWS OIDC (no long-lived credentials)
 
-### How to Add Screenshots
-```bash
-# Take screenshot of GitLeaks results and save to:
-screenshots/security/gitleaks-clean.png
-```
 
----
 
 ## 2. MegaLinter - Code Quality
 
@@ -147,7 +146,7 @@ Multi-language linting to enforce code quality standards and catch common progra
 
 #### Status: ⚠️ **MINOR ISSUES** - Non-blocking warnings
 
-![MegaLinter Results](/screenshots/security/megalinter-results.png)
+![MegaLinter Results](/screenshots/security/megalinter-report.png)
 
 **Scan Summary:**
 - **Linters Run**: 12
@@ -172,14 +171,6 @@ npm run lint:fix
 # - Trailing spaces: Configure editor to trim
 # - YAML indent: Use consistent 2-space indent
 ```
-
-### How to Add Screenshots
-```bash
-# Take screenshot of MegaLinter results and save to:
-screenshots/security/megalinter-results.png
-```
-
----
 
 ## 3. SonarCloud - SAST Analysis
 
@@ -220,7 +211,7 @@ Static Application Security Testing (SAST) to detect security vulnerabilities, c
 
 #### Status: ⚠️ **SOME ISSUES** - Non-critical findings
 
-![SonarCloud Dashboard](/screenshots/security/sonarcloud-dashboard.png)
+![SonarCloud Dashboard](/screenshots/security/sonarcloud.png)
 
 **Scan Summary:**
 - **Security Rating**: A 🏆
@@ -245,13 +236,7 @@ Static Application Security Testing (SAST) to detect security vulnerabilities, c
 - [ ] Improve HTML semantic structure
 - [ ] Refactor CSS for better maintainability
 
-### How to Add Screenshots
-```bash
-# Take screenshot of SonarCloud dashboard and save to:
-screenshots/security/sonarcloud-dashboard.png
-```
 
----
 
 ## 4. Snyk - Dependency Vulnerabilities
 
@@ -285,7 +270,7 @@ Software Composition Analysis (SCA) to detect vulnerabilities in third-party dep
 
 #### Status: ✅ **RESOLVED** - All Critical & High vulnerabilities fixed
 
-![Snyk Vulnerability Fixed](/screenshots/security/snyk-fixed-vulnerabilities.png)
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_7.png)
 
 **Before Remediation (app/Dockerfile):**
 - **Critical**: 2 ❌
@@ -295,6 +280,26 @@ Software Composition Analysis (SCA) to detect vulnerabilities in third-party dep
 - **Total**: 18 vulnerabilities
 - **Base Image**: nginx:1.27-alpine
 
+**Full Vulnerabilities:**
+
+![Snyk Vulnerability Fixed](/screenshots/security/Synk.png)
+
+**Understanding Severity & Requirements**
+
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_2.png)
+
+**Analyzing CVE**
+
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_3.png)
+
+**Before applying initial remediation**
+
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_4.png)
+
+**After initial remediation**
+
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_5.png)
+
 **After Remediation:**
 - **Critical**: 0 ✅
 - **High**: 0 ✅
@@ -303,6 +308,8 @@ Software Composition Analysis (SCA) to detect vulnerabilities in third-party dep
 - **Base Image**: nginx:1.29.3-alpine ⬆️
 
 ### Vulnerabilities Fixed
+
+![Snyk Vulnerability Fixed](/screenshots/security/Snyk_6.png)
 
 #### 1. **libxml2/libxml2 - Expired Pointer Dereference**
 - **Severity**: CRITICAL 🔴
@@ -335,14 +342,14 @@ Software Composition Analysis (SCA) to detect vulnerabilities in third-party dep
 - **Severity**: LOW ℹ️
 - **Affected**: System libraries in Alpine Linux
 - **Fix**: Base image upgrade resolved all
-- **Status**: ✅ FIXED
-
+- **Status**: ✅ FIXED (later)
+s
 ### How Fixes Were Applied
 
 ```bash
-# 1. Review Snyk report in dashboard
-# Navigate to Projects → app/Dockerfile
-# Review: 2 Critical + 4 High vulnerabilities in nginx:1.27-alpine
+# 1. I Reviewed Snyk report in dashboard
+# Navigated to Projects → app/Dockerfile
+# I Reviewed: 2 Critical + 4 High vulnerabilities in nginx:1.27-alpine
 
 # 2. Check Snyk recommendations
 # Snyk showed: "Minor upgrades" → nginx:1.29.3-alpine (0 vulnerabilities)
@@ -392,20 +399,7 @@ git push
 - Verification: Re-scanned with Snyk and Trivy - 0 vulnerabilities found
 - Impact: No application code changes required, deployed via standard CI/CD pipeline
 
-### How to Add Screenshots
-```bash
-# You have 5 screenshots showing the security journey:
-# 1. snyk-dashboard-vulnerable-projects.png - Initial state
-# 2. snyk-dashboard-pending-tasks.png - Overview of issues
-# 3. snyk-dockerfile-critical-issues.png - Detailed CVE view
-# 4. snyk-dockerfile-upgrade-recommendation.png - Fix recommendation
-# 5. snyk-projects-fixed.png - Final clean state
 
-# Save all to:
-screenshots/security/snyk-*.png
-```
-
----
 
 ## 5. Trivy - Container Scanning
 
@@ -443,7 +437,7 @@ Scan Docker images for OS package vulnerabilities and misconfigurations.
 
 #### Status: ✅ **CLEAN** - No vulnerabilities found
 
-![Trivy Container Scan](/screenshots/security/trivy-clean-scan.png)
+![Trivy Container Scan](/screenshots/security/trivy-scan.png)
 
 **Scan Summary:**
 - **Base Image**: nginx:1.29.3-alpine
@@ -483,19 +477,12 @@ EXPOSE 8080  # Not port 80 (requires root)
 
 ### Continuous Monitoring
 
-**Weekly Rescans:**
+**(Additional) Requires Weekly Rescans:**
 ```yaml
 schedule:
   - cron: '0 0 * * 0'  # Every Sunday at midnight
 ```
 
-### How to Add Screenshots
-```bash
-# Take screenshot of Trivy scan results and save to:
-screenshots/security/trivy-clean-scan.png
-```
-
----
 
 ## 6. TFsec - Infrastructure Security
 
@@ -534,7 +521,7 @@ Static analysis of Terraform code to detect security misconfigurations before in
 
 #### Status: ⚠️ **4 ISSUES** - 3 Critical, 1 Medium (Documented)
 
-![TFsec Scan Results](/screenshots/security/tfsec-issues.png)
+![TFsec Scan Results](/screenshots/security/TFsec-results.png.png)
 
 **Scan Summary:**
 - **Critical**: 3 🔴
@@ -776,13 +763,6 @@ resource "aws_instance" "bastion" {
 }
 ```
 
-### How to Add Screenshots
-```bash
-# Take screenshot of TFsec results and save to:
-screenshots/security/tfsec-issues.png
-```
-
----
 
 ## Security Metrics Dashboard
 
