@@ -301,7 +301,9 @@ This allowed me to:
 
   - Test security policies from outside my local network
 
-** Snippet configuration from my Ngrok **
+
+  **Snippet configuration from my Ngrok**
+  
   ```
   args:
   - "http"
