@@ -301,6 +301,24 @@ This allowed me to:
 
   - Test security policies from outside my local network
 
+** Snippet configuration from my Ngrok **
+  ```
+  args:
+  - "http"
+  - "interview-app-service:8080"
+  - "--authtoken"
+  - "$(NGROK_AUTH_TOKEN)"
+  - "--auth"
+  - "myuser:mypassword"        # Basic auth
+  - "--allow-cidr"
+  - "192.168.0.0/16"            # IP allowlist
+  - "--deny-cidr"
+  - "5.142.0.0/16"              # IP denylist
+  - "--rate-limit"
+  - "20:60s"                     # DDoS protection
+
+  ```
+
 **Everything was declaratively deployed via ArgoCD**, including the SealedSecret containing the Ngrok authtoken.
 
 ## Why this matters for business
